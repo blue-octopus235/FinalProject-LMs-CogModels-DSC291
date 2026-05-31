@@ -17,7 +17,7 @@ import os
 
 import torch
 
-from data_utils import ORIGINAL_FILE, get_test_indices, Vocab
+from data_utils import ORIGINAL_FILE, get_test_indices, pick_device, Vocab
 from lstm_lm import LSTMLanguageModel
 from minimal_pairs import build_minimal_pairs
 
@@ -85,7 +85,7 @@ def main():
     ap.add_argument("--seed", type=int, default=1)
     args = ap.parse_args()
 
-    device = "cuda" if torch.cuda.is_available() else "cpu"
+    device = pick_device()
     vocab = Vocab.load(os.path.join(args.out_dir, "vocab.txt"))
 
     ckpt = torch.load(args.checkpoint, map_location=device)

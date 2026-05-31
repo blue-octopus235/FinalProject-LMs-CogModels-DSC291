@@ -17,7 +17,8 @@ import torch
 import torch.nn as nn
 
 from data_utils import (CONDITIONS, ORIGINAL_FILE, build_vocab, collate,
-                        get_test_indices, read_corpus_column, LMDataset, Vocab)
+                        get_test_indices, pick_device, read_corpus_column,
+                        LMDataset, Vocab)
 from lstm_lm import LSTMLanguageModel
 
 
@@ -56,7 +57,7 @@ def main():
 
     torch.manual_seed(args.seed)
     os.makedirs(args.out_dir, exist_ok=True)
-    device = "cuda" if torch.cuda.is_available() else "cpu"
+    device = pick_device()
     print(f"[train] condition={args.condition} seed={args.seed} device={device}")
 
     test_idx = get_test_indices()

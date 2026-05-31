@@ -40,6 +40,15 @@ ORIGINAL_FILE = "agr_50_mostcommon_10K.tsv"
 N_ROWS = 1577211  # data rows in every aligned file
 
 
+def pick_device():
+    """cuda (Colab T4) > mps (Apple M-series) > cpu."""
+    if torch.cuda.is_available():
+        return "cuda"
+    if getattr(torch.backends, "mps", None) is not None and torch.backends.mps.is_available():
+        return "mps"
+    return "cpu"
+
+
 def get_test_indices(n_test=20000, seed=1234, n_rows=N_ROWS):
     """Fixed, seeded set of held-out row indices (0-based into the data rows)."""
     rng = np.random.RandomState(seed)
