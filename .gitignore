@@ -1,0 +1,14 @@
+# large data files (share via Drive/Dropbox, not git)
+data/*.tsv
+data/*.tsv.gz
+data/*.csv
+# checkpoints & vocab (regenerate via training)
+checkpoints/*.pt
+# results are regenerated; keep figures if you want them in the repo
+# (uncomment to ignore) results/*.png
+__pycache__/
+*.pyc
+.DS_Store
+.ipynb_checkpoints/
+.antigravitycli/
+.claude/
