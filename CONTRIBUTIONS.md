@@ -6,7 +6,7 @@ meaningful (code, analysis, writing, coordination — not just commits). Keep it
 short.
 
 ## Jackson Wilke
-- Wrote the first version of the project proposal.
+- **2026-05-07** — Wrote the first version of the project proposal.
 - **2026-05-31** — Stood up the end-to-end LSTM pipeline: data loading + shared
   vocab, leak-free 20k-row held-out split, minimal-pair eval (accuracy,
   surprisal, attractor gap), training script, plotting. Verified corpus
@@ -16,8 +16,11 @@ short.
   `ProjectProposal/methods_draft.md`)
 
 ## Kelly Fu
-- Updated the project proposal with the professor's feedback.
-- **(pre-2026-05-31)** — Built the noise-injection pipeline and the 5 corrupted
+- **2026-05-27** — Updated the project proposal with the professor's feedback
+  (switched the primary model GPT-2 → RNNG as a syntactically-biased comparison,
+  added the data-acquisition plan; background-papers section still pending as of
+  5/31).
+- **2026-05-29** — Built the noise-injection pipeline and the 5 corrupted
   corpora (`flip_verb_agreement_perfect`, `inject_sva_errors`); validated 5,000
   sampled sentences for correct injection. (`data/Untitled.ipynb`, the 5
   `sva_corpus_*` files)
