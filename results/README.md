@@ -1,23 +1,37 @@
 # Results
 
-**PRELIMINARY** — first local validation run, not the final-scale results.
-
-- Run: `./run_sweep_local.sh` on an M1 Pro (MPS).
-- Scale: LSTM, **50,000 training sentences/condition**, 5 epochs, **single seed (1)**.
+Full-scale LSTM run: **150,000 training sentences/condition**, 5 epochs, **seeds {1,2,3}**.
+- Run: `./run_sweep_multiseed.sh` on an M1 Pro (MPS).
 - Eval: 19,819 held-out minimal pairs (1,528 with attractors), identical across conditions.
-
-For the paper, rerun at full corpus size with seeds {1,2,3} on a T4
-(`notebooks/colab_runner.ipynb`) and regenerate these figures.
+- Values below are **mean ± std over 3 seeds**. Raw per-seed rows: `eval_results.csv`.
+- The earlier single-seed 50k validation is preserved in `eval_results_prelim_50k.csv`.
 
 | condition | rate | acc_all | acc_no_attr | acc_attr | gap |
 |---|---|---|---|---|---|
-| baseline | 0.0 | 0.861 | 0.877 | 0.662 | 0.216 |
-| low | 0.004 | 0.861 | 0.879 | 0.651 | 0.229 |
-| medium_low | 0.02 | 0.859 | 0.880 | 0.618 | 0.262 |
-| medium_high | 0.10 | 0.827 | 0.848 | 0.570 | 0.278 |
-| high | 0.50 | 0.657 | 0.670 | 0.500 | 0.170 |
+| baseline   | 0.0   | 0.957 ± 0.005 | 0.963 ± 0.003 | 0.876 ± 0.027 | 0.088 ± 0.024 |
+| low        | 0.004 | 0.951 ± 0.008 | 0.959 ± 0.007 | 0.848 ± 0.025 | 0.111 ± 0.019 |
+| medium_low | 0.02  | 0.942 ± 0.013 | 0.952 ± 0.009 | 0.828 ± 0.057 | 0.124 ± 0.048 |
+| medium_high| 0.10  | 0.920 ± 0.018 | 0.935 ± 0.015 | 0.740 ± 0.048 | 0.195 ± 0.033 |
+| high       | 0.50  | 0.698 ± 0.012 | 0.714 ± 0.014 | 0.506 ± 0.037 | 0.208 ± 0.046 |
 
-Note: at 50% noise the attractor accuracy hits the 0.5 chance floor, so the
-attractor *gap* shrinks not because hierarchy recovers but because both cells
-collapse toward chance (floor effect) — interpret the gap alongside the raw
-attractor accuracy, not on its own.
+## Reading the result
+
+- **Overall accuracy degrades monotonically with noise** (0.957 → 0.698), with the sharp
+  drop concentrated between 10% and 50% — small amounts of agreement noise are tolerated;
+  large amounts break the model.
+- **Attractor cases erode first and fastest.** Accuracy on pairs with an intervening
+  attractor noun falls from 0.876 to chance (0.506) at 50% noise, while no-attractor
+  accuracy stays high until the 50% condition.
+- **The attractor gap grows monotonically** (0.088 → 0.208): as noise rises, the model
+  leans harder on the linear (nearest-noun) heuristic over the hierarchical (true-subject)
+  rule. Unlike the 50k single-seed prelim — where the gap *shrank* at 50% because both
+  cells floored — at full scale the no-attractor cell hasn't floored (0.714), so the gap
+  stays wide and the hierarchy-erosion story reads cleanly.
+
+Figures (regenerated from the multiseed run, averaged over seeds):
+`acc_vs_noise.png`, `attractor_gap.png`, `acc_by_attractor.png`.
+
+## Next (paper phase, 6/11)
+
+Add the RNNG arm (spike is GO — see `rnng/`) and compare its noise robustness and
+attractor gap against the LSTM at matched scale.

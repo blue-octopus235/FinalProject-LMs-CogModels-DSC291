@@ -14,6 +14,13 @@ short.
   RNNG-spike notebooks. Drafted the methods section. Ran the first local
   5-condition baseline sweep. (`src/`, `notebooks/`, `README.md`,
   `ProjectProposal/methods_draft.md`)
+- **2026-05-31** — Ran the RNNG feasibility spike (the project's #1 risk) to a
+  **GO**: got `aistairc/rnng-pytorch` installing + training end-to-end, and
+  confirmed the full pipeline on our own data — real Linzen sentences →
+  benepar parses → `preprocess.py` → RNNG trains (val PPL drops). Found/patched
+  a NumPy-2 crash that also hits Colab. Documented the path, fixes, and a key
+  efficiency insight (parse once, reuse trees across all noise conditions) plus
+  the parser-quality validity risk for the paper. (`rnng/`)
 
 ## Kelly Fu
 - **2026-05-27** — Updated the project proposal with the professor's feedback
