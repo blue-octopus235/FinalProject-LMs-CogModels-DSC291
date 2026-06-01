@@ -43,9 +43,14 @@ short.
   minimal-pair eval on each one.
 - **2026-06-01** — Ran the evals across all five noise levels and looked at how
   the models did — overall accuracy, plus accuracy with and without an attractor.
-  The local seed-1 trend is what we hoped for: the model does well on clean data
-  (~0.96 overall) and steadily worse as we add noise (down to ~0.69 at the
-  worst), and the attractor cases are consistently the tougher ones.
+  The trend is what we hoped for: the model does well on clean data and steadily
+  worse as we add noise, and the attractor cases are consistently the tougher ones.
+- **2026-06-01** — Ran the full 3-seed sweep on Colab (T4, 150k sentences each)
+  and pulled the results together with the earlier sweep — 6 runs per condition
+  in total. The noise effect is really clear: accuracy drops from ~0.96 at
+  baseline down to ~0.71 at the highest noise rate, and the attractor gap nearly
+  triples, meaning the model leans more on the nearest-noun shortcut the noisier
+  the training data gets. Updated `results/eval_results.csv` and the figures.
 
 ---
 ### Areas of ownership (from proposal)
