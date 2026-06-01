@@ -96,4 +96,6 @@ short.
 - Eval & analysis: Sanjana (minimal-pair eval), Kelly (surprisal + rule probing),
   Jackson (visualization/stats)
 - Writing & presentation: Kelly (intro/conclusion + coordination), Jackson
-  (methods/setup), Sanjana (results/discussion + slides)
+  (methods/setup), Sanjana (results/discussion). Slides split by topic to mirror
+  report sections — Kelly (motivation/background), Jackson (methods), Sanjana
+  (results/discussion); Sanjana coordinates/assembles the deck.
