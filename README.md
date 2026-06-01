@@ -47,6 +47,11 @@ pip install -r requirements.txt
 python src/train.py    --condition baseline --max_sentences 3000 --epochs 1
 python src/evaluate.py --checkpoint checkpoints/lstm_baseline_seed1.pt --condition baseline
 python src/plots.py
+
+# learning trajectory (RQ1: does noise delay or prevent acquisition?)
+# save intermediate checkpoints during training, then score every step
+python src/train.py      --condition baseline --max_sentences 3000 --epochs 2 --ckpt_every_steps 100
+python src/trajectory.py --condition baseline --seed 1   # -> results/trajectory_results.csv
 ```
 On a T4, use `notebooks/colab_runner.ipynb` (loops all 5 conditions). The full suite is
 5 conditions × seeds; for the **Wednesday talk** run single-seed LSTM across all 5.
