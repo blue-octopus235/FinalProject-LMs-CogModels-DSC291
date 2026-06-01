@@ -21,6 +21,20 @@ short.
   a NumPy-2 crash that also hits Colab. Documented the path, fixes, and a key
   efficiency insight (parse once, reuse trees across all noise conditions) plus
   the parser-quality validity risk for the paper. (`rnng/`)
+- **2026-05-31** — Upgraded LSTM results from the 50k single-seed prelim to the
+  full 150k × seeds {1,2,3} sweep. Key finding: overall accuracy degrades
+  monotonically with SVA noise (0.957 → 0.698) and the attractor gap grows
+  monotonically (0.088 → 0.208), consistent with a hierarchical-rule account.
+  Preserved prelim in `results/eval_results_prelim_50k.csv`; refreshed
+  `results/README.md` with mean ± std table and updated all three figures.
+  (`results/`, `run_sweep_multiseed.sh`)
+- **2026-05-31** — Reorganized `literature/` into `pdfs/` and `summaries/`
+  subdirectories; wrote a structured one-page summary for each of the 12 core
+  papers (Linzen 2016, Gulordava 2018, Dyer 2016, McCoy 2020, Warstadt 2020 +
+  2023, Sartran 2022, Shen 2019, Gauthier 2020, Wilcox 2020, Chomsky 1980).
+  Added `literature/README.md` index table and authored `CLAUDE.md` with
+  commands, data-flow architecture, and the leak-free invariant. (`literature/`,
+  `CLAUDE.md`)
 
 ## Kelly Fu
 - **2026-05-27** — Updated the project proposal with the professor's feedback
