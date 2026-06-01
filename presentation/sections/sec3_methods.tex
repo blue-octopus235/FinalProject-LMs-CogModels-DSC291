@@ -3,26 +3,74 @@
 % OWNER: Jackson Wilke (methods/setup per proposal)
 
 \begin{frame}{Noise injection: five corrupted corpora}
-  % TODO (Jackson): flip SVA with prob p in {0.0, 0.004, 0.02, 0.10, 0.50};
-  % all other properties preserved; training-set size held constant.
   \begin{itemize}
-    \item TODO
+    \item Base: Linzen et al.\ (2016) SVA corpus --- $\sim$1.58M Wikipedia
+          sentences, vocab capped at the 10K most frequent types.
+    \item Each sentence annotated with subject, verb, verb position, and
+          \# intervening attractor nouns.
+    \item Build five training corpora, identical except agreement noise:
+          flip the verb's number with probability $p$.
+          \[
+            p \in \{0,\ 0.004,\ 0.02,\ 0.10,\ 0.50\}
+            \quad(\text{baseline} \to \text{high})
+          \]
+    \item Flip via deterministic inflection (\texttt{lemminflect} + irregular
+          copulas/auxiliaries); all other lexical/syntactic content preserved.
+    \item Training-set size held constant $\Rightarrow$ isolates noise.
   \end{itemize}
 \end{frame}
 
 \begin{frame}{Leak-free evaluation protocol}
-  % TODO (Jackson): fixed 20k held-out indices (seed 1234) excluded from every
-  % training corpus; minimal pairs built from the *clean* version of those rows.
   \begin{itemize}
-    \item TODO
+    \item The five corpora are row-aligned with the source corpus.
+    \item Reserve one fixed held-out set: 20k sentence indices (seed 1234).
+    \item Those rows excluded from \textbf{every} training corpus
+          $\Rightarrow$ no test leakage under any noise condition.
+    \item Test items built from the \textbf{uncorrupted} source
+          $\Rightarrow$ all test sentences are grammatical.
+    \item Same test set for all conditions --- only training noise varies.
   \end{itemize}
 \end{frame}
 
-\begin{frame}{Models and metrics}
-  % TODO (Jackson): LSTM (Gulordava-style) vs. RNNG (aistairc/rnng-pytorch);
-  % metrics: minimal-pair accuracy, attractor gap, target-verb surprisal;
-  % seeds {1,2,3}.
+\begin{frame}{Minimal-pair test}
   \begin{itemize}
-    \item TODO
+    \item For each held-out sentence: a prefix, the grammatical verb $v^{+}$,
+          and its number-flipped counterpart $v^{-}$.
+    \item Model is \textbf{correct} iff it prefers the grammatical form:
+          \[
+            P(v^{+}\mid \text{prefix}) \; > \; P(v^{-}\mid \text{prefix})
+          \]
+    \item Each pair tagged \texttt{has\_attractor}: an intervening noun
+          mismatching the subject in number.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Models}
+  \begin{itemize}
+    \item \textbf{Sequential baseline} --- word-level LSTM LM
+          (Linzen 2016 / Gulordava 2018 style): 2 layers, tied embeddings,
+          dropout; trained from scratch per condition.
+    \item \textbf{Structurally-biased} --- RNNG (Dyer et al.\ 2016):
+          explicit hierarchical structure.
+    \item Core question: does a structural bias make hierarchical agreement
+          \emph{more robust} to noisy supervision?
+    \item Fallback: ON-LSTM (Shen et al.\ 2019) --- softer structural bias,
+          no parse supervision needed.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Metrics and rule probing}
+  \begin{itemize}
+    \item Primary: minimal-pair \textbf{accuracy} (grammatical $>$ ungrammatical).
+    \item Secondary (graded): \textbf{surprisal} of the correct verb,
+          \(\; s = -\log_2 P(v^{+}\mid \text{prefix})\).
+    \item Split accuracy by attractor presence; reliance on the linear cue =
+          \textbf{attractor gap}
+          \[
+            \Delta = \text{acc}_{\text{no-attr}} - \text{acc}_{\text{attr}}
+          \]
+    \item Small $\Delta \to$ hierarchical rule; large $\Delta \to$
+          nearest-noun (linear) rule.
+    \item Averaged over seeds $\{1,2,3\}$; central analysis: $\Delta$ vs.\ noise.
   \end{itemize}
 \end{frame}

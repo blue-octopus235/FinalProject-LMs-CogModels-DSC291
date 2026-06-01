@@ -53,6 +53,13 @@ short.
   frames pre-wired to `results/` figures via `\graphicspath`, plus a `latexmk`
   `Makefile` and `presentation/.gitignore`. Verified it compiles. (`presentation/`)
 
+- **2026-06-01** — Wrote the methods slides: filled the talk's methods section,
+  expanding the stubs into five focused frames (noise injection + five corrupted
+  corpora, leak-free 20k held-out protocol, the minimal-pair test, LSTM-vs-RNNG
+  models, and metrics/rule-probing) with key bullets and equations
+  (verb-flip rates, the $P(v^{+}) > P(v^{-})$ criterion, surprisal, attractor
+  gap). Verified the deck compiles. (`presentation/sections/sec3_methods.tex`)
+
 ## Kelly Fu
 - **2026-05-27** — Updated the project proposal with the professor's feedback
   (switched the primary model GPT-2 → RNNG as a syntactically-biased comparison,
