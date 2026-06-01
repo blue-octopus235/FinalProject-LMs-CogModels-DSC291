@@ -1,0 +1,52 @@
+\documentclass[aspectratio=169]{beamer}
+
+% Theme. Madrid is built into beamer (no extra packages needed). Swap for
+% metropolis etc. if installed.
+\usetheme{Madrid}
+\usecolortheme{default}
+\setbeamertemplate{navigation symbols}{}   % drop nav clutter
+\setbeamertemplate{caption}[numbered]
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{amsmath,amssymb}
+
+% Figures live in the repo-level results/ directory; reference them in place
+% via bare filenames (e.g. acc_vs_noise.png) rather than copying into slides/.
+\graphicspath{{../results/}}
+
+\title[SVA Robustness to Noise]{Does Syntactic Structure Make Language Models\\
+       More Robust to Noise?}
+\subtitle{LSTM vs.\ RNNG Subject--Verb Agreement Under Training-Data Corruption}
+\author[Wilke, Fu, Garimella]{Jackson Wilke \and Kelly Fu \and Sanjana Garimella}
+\institute[UCSD]{DSC 291: Language Models as Cognitive Models \\ UC San Diego}
+\date{June 2026}
+
+\begin{document}
+
+\begin{frame}[plain]
+  \titlepage
+\end{frame}
+
+\begin{frame}{Outline}
+  \tableofcontents
+\end{frame}
+
+\input{sections/sec1_motivation}
+\input{sections/sec2_background}
+\input{sections/sec3_methods}
+\input{sections/sec4_results}
+\input{sections/sec5_discussion}
+
+% Closing
+\begin{frame}[plain]
+  \centering
+  \vfill
+  {\Huge Thank you!}\\[1em]
+  {\large Questions?}
+  \vfill
+\end{frame}
+
+\end{document}

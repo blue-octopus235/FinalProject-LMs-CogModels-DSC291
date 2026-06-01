@@ -46,6 +46,13 @@ short.
   (`make` / `watch` / `clean` / `purge`) and a `report/.gitignore` for LaTeX
   aux files. Verified the skeleton compiles. (`report/`)
 
+- **2026-06-01** — Scaffolded the talk in `presentation/`: Beamer deck
+  (Madrid theme, 16:9) mirroring the report's framework — one-file-per-section
+  skeleton (motivation, background, methods, results, discussion) with frame
+  stubs, per-frame owner + TODO comments from the proposal's split, results
+  frames pre-wired to `results/` figures via `\graphicspath`, plus a `latexmk`
+  `Makefile` and `presentation/.gitignore`. Verified it compiles. (`presentation/`)
+
 ## Kelly Fu
 - **2026-05-27** — Updated the project proposal with the professor's feedback
   (switched the primary model GPT-2 → RNNG as a syntactically-biased comparison,
