@@ -5,6 +5,10 @@ Produces:
   results/attractor_gap.png       attractor gap (linear-rule reliance) vs noise
   results/acc_by_attractor.png    accuracy with vs without attractor
 
+If results/trajectory_results.csv exists, also produces:
+  results/acc_trajectory.png      accuracy vs training step, one curve per condition
+  results/gap_trajectory.png      attractor gap vs training step, one curve per condition
+
 Add more architectures by giving each its own `arch` column / file; the plot
 loops over whatever conditions are present.
 """
@@ -83,6 +87,43 @@ def main():
     plt.tight_layout()
     plt.savefig(os.path.join(args.out_dir, "acc_by_attractor.png"), dpi=150)
     print(f"[plots] wrote 3 figures to {args.out_dir}/")
+
+    # 4 & 5) learning trajectory plots (only if trajectory_results.csv exists)
+    traj_csv = os.path.join(os.path.dirname(args.results_csv), "trajectory_results.csv")
+    if os.path.exists(traj_csv):
+        tdf = pd.read_csv(traj_csv)
+        tdf["rate"] = tdf["rate"].astype(float)
+        colors = plt.cm.viridis([0.1, 0.3, 0.5, 0.7, 0.95])
+        groups = sorted(
+            [(c, r, g.sort_values("step"))
+             for (c, r), g in tdf.groupby(["condition", "rate"])],
+            key=lambda x: x[1])
+
+        # acc trajectory
+        plt.figure(figsize=(7, 4))
+        for (c, r, g), col in zip(groups, colors):
+            plt.plot(g["step"], g["acc_all"], label=f"{c} ({r:g})", color=col)
+        plt.axhline(0.5, ls="--", c="gray", lw=1, label="chance")
+        plt.xlabel("training steps")
+        plt.ylabel("minimal-pair accuracy")
+        plt.title("Learning trajectory: accuracy over training")
+        plt.legend(fontsize=7, loc="lower right")
+        plt.tight_layout()
+        plt.savefig(os.path.join(args.out_dir, "acc_trajectory.png"), dpi=150)
+
+        # attractor gap trajectory
+        plt.figure(figsize=(7, 4))
+        for (c, r, g), col in zip(groups, colors):
+            plt.plot(g["step"], g["attractor_gap"], label=f"{c} ({r:g})", color=col)
+        plt.axhline(0, ls="--", c="gray", lw=1)
+        plt.xlabel("training steps")
+        plt.ylabel("attractor gap = acc(no-attr) − acc(attr)")
+        plt.title("Learning trajectory: linear-rule reliance over training")
+        plt.legend(fontsize=7, loc="upper right")
+        plt.tight_layout()
+        plt.savefig(os.path.join(args.out_dir, "gap_trajectory.png"), dpi=150)
+
+        print(f"[plots] wrote 2 trajectory figures to {args.out_dir}/")
 
 
 if __name__ == "__main__":

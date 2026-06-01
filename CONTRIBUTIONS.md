@@ -51,6 +51,12 @@ short.
   baseline down to ~0.71 at the highest noise rate, and the attractor gap nearly
   triples, meaning the model leans more on the nearest-noun shortcut the noisier
   the training data gets. Updated `results/eval_results.csv` and the figures.
+- **2026-06-01** — Ran the learning-trajectory sweep on Colab and added the
+  results to `results/trajectory_results.csv`. The curves answer RQ1 directly:
+  low-noise conditions all climb to ~0.96 by the end of training (noise delays
+  but doesn't stop acquisition), while the 50% noise condition plateaus around
+  0.69 and never gets there — that's prevention. Added trajectory plots to
+  `src/plots.py` (`acc_trajectory.png`, `gap_trajectory.png`).
 
 ---
 ### Areas of ownership (from proposal)

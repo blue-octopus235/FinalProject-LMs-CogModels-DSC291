@@ -31,6 +31,23 @@ Full-scale LSTM run: **150,000 training sentences/condition**, 5 epochs, **seeds
 Figures (regenerated from the multiseed run, averaged over seeds):
 `acc_vs_noise.png`, `attractor_gap.png`, `acc_by_attractor.png`.
 
+## Learning trajectory (RQ1: delay vs. prevention?)
+
+Single-seed run (seed 1, 150k sentences, 5 epochs), checkpoint every 500 steps.
+Raw data: `trajectory_results.csv`. Figures: `acc_trajectory.png`, `gap_trajectory.png`.
+
+| condition | acc at step 500 | acc at step 11500 | verdict |
+|---|---|---|---|
+| baseline  | 0.681 | 0.966 | acquires rule fully |
+| low       | 0.681 | 0.966 | acquires rule fully |
+| medium_low| 0.678 | 0.965 | acquires rule fully |
+| medium_high| 0.675 | 0.949 | acquires rule fully (slight cost) |
+| **high**  | **0.605** | **0.693** | **plateaus — rule not acquired** |
+
+Low-to-medium noise **delays** acquisition; 50% noise **prevents** it. The attractor
+gap for the high condition also grows over training (0.14→0.20), meaning more training
+makes the model *more* reliant on the linear nearest-noun rule, not less.
+
 ## Next (paper phase, 6/11)
 
 Add the RNNG arm (spike is GO — see `rnng/`) and compare its noise robustness and
