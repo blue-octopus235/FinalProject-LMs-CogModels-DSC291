@@ -1,0 +1,63 @@
+\documentclass[11pt]{article}
+
+% ACL style. Switch "review" -> "final" for camera-ready, or "preprint"
+% for a non-anonymous version with page numbers.
+\usepackage[review]{acl}
+
+% Standard package includes
+\usepackage{times}
+\usepackage{latexsym}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{microtype}
+\usepackage{inconsolata}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{amsmath,amssymb}
+
+% Figures live in the repo-level results/ directory; we reference them in
+% place rather than copying them into report/. \includegraphics commands use
+% bare filenames (e.g. acc_vs_noise.png) and this path resolves them.
+\graphicspath{{../results/}}
+
+\title{Does Syntactic Structure Make Language Models More Robust to Noise?\\
+       LSTM vs.\ RNNG Subject--Verb Agreement Under Training-Data Corruption}
+
+% For the camera-ready (non-anonymous) version, fill in author info.
+\author{Jackson Wilke \\
+  UC San Diego \\
+  \texttt{j2wilke@ucsd.edu} \\\And
+  Kelly Fu \\
+  UC San Diego \\\And
+  Sanjana Garimella \\
+  UC San Diego \\}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+\input{sections/abstract}
+\end{abstract}
+
+\input{sections/sec1_introduction}
+\input{sections/sec2_background}
+\input{sections/sec3_methods}
+\input{sections/sec4_experiments}
+\input{sections/sec5_results}
+\input{sections/sec6_discussion}
+\input{sections/sec7_conclusion}
+
+% The Limitations section is required for ACL submissions and is not
+% counted against the page limit.
+\input{sections/limitations}
+
+% \nocite{*} forces all refs.bib entries into the bibliography so the skeleton
+% builds before any \cite commands exist. TODO: remove once sections cite works
+% directly, so the References list only shows actually-cited papers.
+\nocite{*}
+\bibliography{refs}
+
+\appendix
+\input{sections/appendix}
+
+\end{document}

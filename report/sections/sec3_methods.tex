@@ -1,0 +1,29 @@
+\section{Methods}
+\label{sec:methods}
+
+% OWNER: Jackson Wilke (methods/setup: data, noise, architectures per proposal)
+
+\subsection{Data and Noise Injection}
+\label{sec:data}
+% TODO: corpus; five noise rates {0.0, 0.004, 0.02, 0.10, 0.50}; verb_flip.py /
+%       lemminflect; training-set size held constant across conditions.
+
+\subsection{Leak-Free Evaluation Protocol}
+\label{sec:leakfree}
+% TODO: fixed 20k held-out indices (seed 1234) excluded from all training
+%       corpora; minimal pairs built from the clean version of those rows.
+
+\subsection{Minimal Pairs}
+\label{sec:minimalpairs}
+% TODO: prefix + correct verb + flipped verb; scored by probability;
+%       has_attractor flag.
+
+\subsection{Models}
+\label{sec:models}
+% TODO: LSTM (Gulordava-style 2-layer; hyperparameters).
+% TODO: RNNG (aistairc/rnng-pytorch; benepar trees; ON-LSTM fallback if used).
+
+\subsection{Metrics}
+\label{sec:metrics}
+% TODO: acc_all; acc_attractor / acc_no_attractor; attractor gap; surprisal;
+%       averaged over seeds {1,2,3} with error bars.

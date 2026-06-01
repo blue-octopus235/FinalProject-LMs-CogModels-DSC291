@@ -36,6 +36,16 @@ short.
   commands, data-flow architecture, and the leak-free invariant. (`literature/`,
   `CLAUDE.md`)
 
+- **2026-06-01** — Scaffolded the final paper in `report/`: ACL-style LaTeX
+  template (official `acl.sty`/`acl_natbib.bst`, ACL Limitations section),
+  one-file-per-section skeleton (abstract, intro, background, methods,
+  experiments, results, discussion, conclusion, limitations, appendix) with
+  per-section owner + TODO stubs assigned from the proposal's writing split.
+  Wired figures to reference `results/` in place via `\graphicspath`, seeded
+  `refs.bib` with the core SVA/RNNG citations, added a `latexmk` `Makefile`
+  (`make` / `watch` / `clean` / `purge`) and a `report/.gitignore` for LaTeX
+  aux files. Verified the skeleton compiles. (`report/`)
+
 ## Kelly Fu
 - **2026-05-27** — Updated the project proposal with the professor's feedback
   (switched the primary model GPT-2 → RNNG as a syntactically-biased comparison,
