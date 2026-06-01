@@ -33,7 +33,19 @@ short.
   `sva_corpus_*` files)
 
 ## Sanjana Garimella
-- _(add entries as work lands)_
+- **2026-05-11** — Went through the proposal draft and cleaned up the research
+  questions and the setup section.
+- **2026-05-29** — Talked to the prof to get a rough sense of the dataset and
+  its demographics, and grabbed the data from the Linzen et al. paper.
+- **2026-06-01** — Set up checkpointing during training so we can check how the
+  model does partway through, not just at the end. Added `--ckpt_every_steps`
+  to `train.py` to save those checkpoints, plus `src/trajectory.py` to run the
+  minimal-pair eval on each one.
+- **2026-06-01** — Ran the evals across all five noise levels and looked at how
+  the models did — overall accuracy, plus accuracy with and without an attractor.
+  The local seed-1 trend is what we hoped for: the model does well on clean data
+  (~0.96 overall) and steadily worse as we add noise (down to ~0.69 at the
+  worst), and the attractor cases are consistently the tougher ones.
 
 ---
 ### Areas of ownership (from proposal)

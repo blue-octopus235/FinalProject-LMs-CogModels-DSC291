@@ -2,6 +2,7 @@
 data/*.tsv
 data/*.tsv.gz
 data/*.csv
+291-data/
 # checkpoints & vocab (regenerate via training)
 checkpoints/*.pt
 # results are regenerated; keep figures if you want them in the repo

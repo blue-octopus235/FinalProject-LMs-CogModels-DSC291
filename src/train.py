@@ -22,6 +22,13 @@ from data_utils import (CONDITIONS, ORIGINAL_FILE, build_vocab, collate,
 from lstm_lm import LSTMLanguageModel
 
 
+def save_checkpoint(model, args, rate, path, step=None):
+    payload = {"model_state": model.state_dict(), "args": vars(args), "rate": rate}
+    if step is not None:
+        payload["step"] = step
+    torch.save(payload, path)
+
+
 def get_or_build_vocab(data_dir, out_dir, max_size, max_sentences_for_vocab=None):
     vocab_path = os.path.join(out_dir, "vocab.txt")
     if os.path.exists(vocab_path):
@@ -53,6 +60,10 @@ def main():
     ap.add_argument("--vocab_size", type=int, default=10000)
     ap.add_argument("--seed", type=int, default=1)
     ap.add_argument("--clip", type=float, default=1.0)
+    ap.add_argument("--ckpt_every_steps", type=int, default=0,
+                    help="also save intermediate checkpoints every N optimizer "
+                         "steps for learning-trajectory analysis "
+                         "(0 = off; final checkpoint is always saved)")
     args = ap.parse_args()
 
     torch.manual_seed(args.seed)
@@ -82,6 +93,7 @@ def main():
     crit = nn.CrossEntropyLoss(ignore_index=vocab.pad)
 
     model.train()
+    global_step = 0
     for epoch in range(1, args.epochs + 1):
         t0 = time.time()
         total_loss, total_tok = 0.0, 0
@@ -93,6 +105,14 @@ def main():
             loss.backward()
             nn.utils.clip_grad_norm_(model.parameters(), args.clip)
             opt.step()
+            global_step += 1
+            if args.ckpt_every_steps and global_step % args.ckpt_every_steps == 0:
+                step_ckpt = os.path.join(
+                    args.out_dir,
+                    f"lstm_{args.condition}_seed{args.seed}_step{global_step}.pt")
+                save_checkpoint(model, args, rate, step_ckpt, step=global_step)
+                print(f"[train] saved trajectory checkpoint {step_ckpt}")
+                model.train()
             ntok = (tgt != vocab.pad).sum().item()
             total_loss += loss.item() * ntok
             total_tok += ntok
@@ -100,8 +120,7 @@ def main():
         print(f"[epoch {epoch}] train ppl={ppl:.2f}  ({time.time()-t0:.1f}s)")
 
     ckpt = os.path.join(args.out_dir, f"lstm_{args.condition}_seed{args.seed}.pt")
-    torch.save({"model_state": model.state_dict(),
-                "args": vars(args), "rate": rate}, ckpt)
+    save_checkpoint(model, args, rate, ckpt, step=global_step)
     print(f"[train] saved {ckpt}")
 
 
