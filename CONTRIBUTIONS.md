@@ -95,8 +95,13 @@ short.
   but doesn't stop acquisition), while the 50% noise condition plateaus around
   0.69 and never gets there — that's prevention. Added trajectory plots to
   `src/plots.py` (`acc_trajectory.png`, `gap_trajectory.png`).
-
----
+- **2026-06-02** — Wrote the Results and Discussion sections (report + slides)
+  from the final numbers: the threshold-like accuracy drop, the widening
+  attractor gap, and the delay-vs-prevention trajectory story. Expanded the
+  `literature/` review with four papers and summaries (Marvin & Linzen 2018,
+  Kuncoro 2018, Lakretz 2019, Evanson 2023) and added the new references to
+  `report/refs.bib`. (`report/sections/sec5_results.tex`, `sec6_discussion.tex`,
+  `presentation/sections/sec4_results.tex`, `sec5_discussion.tex`, `literature/`)
 ### Areas of ownership (from proposal)
 - Data & training infra: Jackson (compute/coordination), Kelly (noise pipeline),
   Sanjana (training scripts/checkpointing)

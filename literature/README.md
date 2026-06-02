@@ -16,9 +16,12 @@ Summaries and PDFs are organized into [summaries/](summaries/) and [pdfs/](pdfs/
 | Wilcox et al. (2020) | [wilcox_2020.md](summaries/wilcox_2020.md) | [wilcox_2020.pdf](pdfs/wilcox_2020.pdf) | RNNG few-shot syntactic generalization (prof's recommendation) |
 | Sartran et al. (2022) | [sartran_2022.md](summaries/sartran_2022.md) | [sartran_2022.pdf](pdfs/sartran_2022.pdf) | RNNG vs. LSTM syntactic comparison (prof's recommendation) |
 | McCoy, Frankland & Linzen (2020) | [mccoy_2020.md](summaries/mccoy_2020.md) | [mccoy_2020.pdf](pdfs/mccoy_2020.pdf) | Rule-learning under noise / poverty-of-stimulus context |
+| Marvin & Linzen (2018) | [marvin_linzen_2018.md](summaries/marvin_linzen_2018.md) | [marvin_linzen_2018.pdf](pdfs/marvin_linzen_2018.pdf) | Minimal-pair targeted-eval paradigm (basis of our accuracy metric) |
+| Kuncoro et al. (2018) | [kuncoro_2018.md](summaries/kuncoro_2018.md) | [kuncoro_2018.pdf](pdfs/kuncoro_2018.pdf) | **RNNG > LSTM on SVA attractors** — precedent for our architecture hypothesis |
 | Warstadt et al. (2020) — BLiMP | [warstadt_2020_blimp.md](summaries/warstadt_2020_blimp.md) | [warstadt_2020_blimp.pdf](pdfs/warstadt_2020_blimp.pdf) | Minimal-pair evaluation paradigm we use |
 | Gauthier et al. (2020) — SyntaxGym | [gauthier_2020.md](summaries/gauthier_2020.md) | [gauthier_2020.pdf](pdfs/gauthier_2020.pdf) | Surprisal-based targeted syntactic evaluation |
 | Shen et al. (2019) — ON-LSTM | [shen_2019.md](summaries/shen_2019.md) | [shen_2019.pdf](pdfs/shen_2019.pdf) | Fallback architecture if RNNG is infeasible |
+| Evanson, Lakretz & King (2023) | [evanson_2023.md](summaries/evanson_2023.md) | [evanson_2023.pdf](pdfs/evanson_2023.pdf) | Learning-trajectory methodology — basis of our delay-vs-prevention analysis |
 
 ## Background / broader context
 
@@ -26,3 +29,4 @@ Summaries and PDFs are organized into [summaries/](summaries/) and [pdfs/](pdfs/
 |-------|---------|-----|----------------|
 | Chomsky (1980) — Rules and Representations / Poverty of Stimulus | [chomsky_1980.md](summaries/chomsky_1980.md) | [chomsky_1980.pdf](pdfs/chomsky_1980.pdf) | Nativist framing our project tests |
 | Warstadt & Bowman (2022) | [warstadt_2023_llms_acquisition.md](summaries/warstadt_2023_llms_acquisition.md) | [warstadt_2023_llms_acquisition.pdf](pdfs/warstadt_2023_llms_acquisition.pdf) | LMs as models of child language acquisition |
+| Lakretz et al. (2019) | [lakretz_2019.md](summaries/lakretz_2019.md) | [lakretz_2019.pdf](pdfs/lakretz_2019.pdf) | Mechanism of SVA in LSTMs — *what* breaks under noise (discussion) |
