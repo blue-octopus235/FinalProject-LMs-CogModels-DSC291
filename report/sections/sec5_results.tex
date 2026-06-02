@@ -3,31 +3,107 @@
 
 % OWNER: Sanjana Garimella (results/discussion per proposal)
 % Figures reference live files in ../results/ via \graphicspath in main.tex.
-% Uncomment and add prose once final numbers are in.
 
-% TODO: Accuracy vs. noise.
-% \begin{figure}[t]
-%   \centering
-%   \includegraphics[width=\linewidth]{acc_vs_noise.png}
-%   \caption{Overall minimal-pair accuracy vs. injected SVA noise rate.}
-%   \label{fig:acc_vs_noise}
-% \end{figure}
+We evaluate every model on the same leak-free set of $19{,}819$ minimal pairs
+($1{,}528$ with an attractor, $18{,}291$ without), held identical across all
+five noise conditions. Unless noted, reported values are the mean over six LSTM
+runs per condition (seeds $\{1,2,3\}$, run on both local MPS and Colab T4);
+$\pm$ denotes standard deviation across runs. Results for the RNNG arm are
+forthcoming and will be added to Table~\ref{tab:main} once training completes.
 
-% TODO: Attractor gap.
-% \begin{figure}[t]
-%   \centering
-%   \includegraphics[width=\linewidth]{attractor_gap.png}
-%   \caption{Attractor gap vs. noise rate.}
-%   \label{fig:attractor_gap}
-% \end{figure}
+\subsection{Noise degrades agreement, with a threshold near 50\%}
 
-% TODO: Accuracy by attractor presence.
-% \begin{figure}[t]
-%   \centering
-%   \includegraphics[width=\linewidth]{acc_by_attractor.png}
-%   \caption{Accuracy on attractor vs. no-attractor items.}
-%   \label{fig:acc_by_attractor}
-% \end{figure}
+Overall minimal-pair accuracy is remarkably stable across the first four noise
+levels and then collapses at the highest rate (Table~\ref{tab:main},
+Figure~\ref{fig:acc_vs_noise}). Accuracy falls only $2.7$ points as the error
+rate climbs from $0\%$ to $10\%$ ($0.961 \to 0.934$), but drops $22.6$ points
+between $10\%$ and $50\%$ ($0.934 \to 0.708$). The model thus tolerates
+substantial agreement noise---up to roughly one corrupted verb in ten---before
+its grasp of the rule breaks down. This non-linear, threshold-like profile
+matches the first outcome anticipated in our proposal: input quality can be
+degraded considerably before grammar learning is affected, but beyond a critical
+point performance falls sharply toward chance.
 
-% TODO: Numeric summary table populated from results/eval_results.csv.
-% \begin{table}[t] ... \label{tab:main} \end{table}
+\begin{table}[t]
+  \centering
+  \small
+  \begin{tabular}{lccc}
+    \toprule
+    Condition & Rate & Acc.\ (all) & Attractor gap \\
+    \midrule
+    baseline     & 0.000 & $0.961 \pm 0.006$ & $0.073 \pm 0.023$ \\
+    low          & 0.004 & $0.958 \pm 0.009$ & $0.087 \pm 0.030$ \\
+    medium-low   & 0.020 & $0.952 \pm 0.014$ & $0.103 \pm 0.038$ \\
+    medium-high  & 0.100 & $0.934 \pm 0.020$ & $0.153 \pm 0.051$ \\
+    high         & 0.500 & $0.708 \pm 0.018$ & $0.198 \pm 0.033$ \\
+    \bottomrule
+  \end{tabular}
+  \caption{LSTM minimal-pair accuracy and attractor gap by training-noise rate
+    (mean $\pm$ std over six runs). Accuracy is stable through $10\%$ noise and
+    collapses at $50\%$; the attractor gap grows monotonically throughout.}
+  \label{tab:main}
+\end{table}
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\linewidth]{acc_vs_noise.png}
+  \caption{Overall minimal-pair accuracy vs.\ injected SVA noise rate. The dashed
+    line marks chance ($0.5$). Performance is flat through $10\%$ noise and falls
+    sharply at $50\%$.}
+  \label{fig:acc_vs_noise}
+\end{figure}
+
+\subsection{Noise pushes the model toward the linear rule}
+
+Splitting accuracy by attractor presence isolates \emph{which} rule the model
+relies on (Figure~\ref{fig:acc_by_attractor}). No-attractor items---where the
+hierarchical and linear rules make the same prediction---stay above $0.94$ until
+the $50\%$ condition. Attractor items, where the two rules disagree, erode far
+faster: accuracy falls from $0.894$ at baseline to $0.525$ (near chance) at
+$50\%$ noise. As a result the \emph{attractor gap}---our index of reliance on the
+linear, nearest-noun heuristic---grows monotonically with noise, from $0.073$ to
+$0.198$ (Figure~\ref{fig:attractor_gap}). Noisier training data drives the model
+away from the hierarchical rule and toward the linear shortcut, consistent with
+the ``noise pushes models toward simpler generalization'' branch of our second
+predicted outcome.
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\linewidth]{acc_by_attractor.png}
+  \caption{Accuracy on attractor vs.\ no-attractor items. The two cells diverge
+    as noise rises: attractor accuracy approaches chance while no-attractor
+    accuracy stays high until $50\%$.}
+  \label{fig:acc_by_attractor}
+\end{figure}
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\linewidth]{attractor_gap.png}
+  \caption{Attractor gap (no-attractor minus attractor accuracy) vs.\ noise rate.
+    The monotonic rise indicates increasing reliance on the linear cue.}
+  \label{fig:attractor_gap}
+\end{figure}
+
+\subsection{Learning trajectories: delay vs.\ prevention}
+
+To ask \emph{when}---not just whether---the rule is acquired, we checkpoint every
+$500$ optimizer steps and re-score the full minimal-pair set at each point
+(Figure~\ref{fig:acc_trajectory}). The curves separate the two ways noise can
+hurt. For the baseline through medium-high conditions, accuracy follows nearly
+the same trajectory and converges to roughly the same endpoint
+($0.95$--$0.97$): noise \emph{delays} acquisition but does not prevent it. The
+$50\%$ condition behaves qualitatively differently---it plateaus near $0.69$ and
+never reaches the rule, i.e.\ \emph{prevention}. The attractor gap reinforces
+this: for the clean model the gap shrinks over training as the hierarchical rule
+consolidates ($0.148 \to 0.054$), whereas for the $50\%$ model it \emph{grows}
+with more training ($0.143 \to 0.197$)---additional exposure to corrupted data
+entrenches the linear heuristic rather than correcting it.
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\linewidth]{acc_trajectory.png}
+  \caption{Minimal-pair accuracy over training steps, one curve per noise
+    condition. Low-to-medium noise tracks the clean trajectory and converges
+    (delay); the $50\%$ condition plateaus well below the others (prevention).}
+  \label{fig:acc_trajectory}
+\end{figure}

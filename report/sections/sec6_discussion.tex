@@ -2,8 +2,57 @@
 \label{sec:discussion}
 
 % OWNER: Sanjana Garimella (results/discussion per proposal)
-% TODO (Sanjana): Does structure buy robustness? (answer H3).
-% TODO: When does the rule break? (attractor gap vs. overall accuracy;
-%       trajectory).
-% TODO: Cognitive-modeling angle (structural priors vs. statistical learning).
-% TODO: Threats to validity (brief; full version in Limitations).
+
+\paragraph{When does the rule break?}
+Two findings constrain when subject--verb agreement survives noisy training.
+First, the breakdown is \emph{threshold-like}, not gradual: accuracy is nearly
+flat up to a $10\%$ corruption rate and only collapses at $50\%$
+(Table~\ref{tab:main}). Small amounts of ungrammatical input are absorbed, much
+as a child's grammar is not derailed by occasional speech errors. Second, the
+attractor gap is a more sensitive early-warning signal than overall accuracy:
+it climbs steadily ($0.073 \to 0.198$) even while aggregate accuracy looks
+healthy, revealing that the model is quietly trading the hierarchical rule for
+the linear nearest-noun heuristic well before its overall performance gives way.
+The trajectory analysis sharpens the distinction between the two ways noise can
+act. Up to $10\%$ noise, learning is merely \emph{delayed}---every condition
+converges to the same accuracy given enough steps---whereas at $50\%$ it is
+\emph{prevented}: the model plateaus far short of the rule, and further training
+deepens rather than repairs its reliance on the linear cue.
+
+\paragraph{Does structure buy robustness?}
+Our central architectural question---whether a syntactically biased model (RNNG)
+withstands noise better than a purely sequential one (LSTM)---requires the RNNG
+runs to answer, and those are still in progress (Section~\ref{sec:results}). The
+LSTM results establish the baseline against which that comparison will be read:
+a recurrent model with no explicit hierarchical bias acquires the hierarchical
+rule cleanly under low noise but is pushed toward the linear heuristic as noise
+grows, and fails outright at $50\%$. If the RNNG preserves the hierarchical rule
+at noise levels where the LSTM has already defaulted to the linear shortcut,
+that would implicate an architectural structural prior as a source of
+robustness. If both architectures degrade together, it would instead suggest the
+limiting factor is the statistical quality of the input rather than the model's
+inductive bias---bearing directly on the poverty-of-the-stimulus framing of
+Section~\ref{sec:introduction}.
+
+\paragraph{Cognitive-modeling angle.}
+The pattern is suggestive for how structural knowledge might arise from
+statistical learning. The LSTM does not begin agreement-aware; the hierarchical
+rule is \emph{acquired} over training, and in the clean setting the attractor
+gap shrinks as that rule consolidates. Noise does not flip a switch so much as
+shift the balance between two competing generalizations---hierarchical and
+linear---both of which the data can support. Heavy enough noise makes the linear
+rule the better fit to the (corrupted) input, and the model follows the data.
+That a distributional learner recovers the hierarchical rule at all from this
+templatic corpus is itself evidence that the structure is more learnable from
+input than a strong nativist account would predict; that it abandons the rule
+under sufficient noise marks the limit of that learnability.
+
+\paragraph{Threats to validity.}
+Three caveats bound these claims; we treat them fully in
+Section~\ref{sec:limitations}. Our noise is synthetic and uniform---a fixed
+per-sentence flip probability---rather than the structured, frequency-dependent
+errors of natural input. The corpus is templatic and vocabulary-controlled,
+which aids control but limits external validity. Finally, the trajectory
+analysis is single-seed; the converging-versus-plateauing pattern is clear, but
+the precise crossover noise rate should be read as approximate until replicated
+across seeds.

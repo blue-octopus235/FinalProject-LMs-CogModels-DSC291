@@ -2,32 +2,75 @@
 
 % OWNER: Sanjana Garimella (results per proposal)
 % Figures reference live files in ../results/ via \graphicspath in main.tex.
-% Uncomment each frame's \includegraphics once you're ready to show it.
 
-\begin{frame}{Accuracy degrades with noise}
-  % TODO (Sanjana): describe the trend; show acc_vs_noise.png.
-  \centering
-  % \includegraphics[height=0.7\textheight]{acc_vs_noise.png}
-  TODO: \texttt{acc\_vs\_noise.png}
+\begin{frame}{Accuracy degrades with noise --- with a threshold}
+  \begin{columns}[T]
+    \begin{column}{0.55\textwidth}
+      \centering
+      \includegraphics[height=0.7\textheight]{acc_vs_noise.png}
+    \end{column}
+    \begin{column}{0.45\textwidth}
+      \small
+      \begin{itemize}
+        \item Flat up to $10\%$ noise: $0.961 \to 0.934$
+        \item Collapses at $50\%$: down to $0.708$
+        \item Tolerates $\sim$1 bad verb in 10, then breaks
+        \item[$\Rightarrow$] critical-threshold effect, not gradual decay
+      \end{itemize}
+    \end{column}
+  \end{columns}
 \end{frame}
 
 \begin{frame}{The attractor gap widens with noise}
-  % TODO (Sanjana): gap grows -> models lean on the linear shortcut.
-  \centering
-  % \includegraphics[height=0.7\textheight]{attractor_gap.png}
-  TODO: \texttt{attractor\_gap.png}
+  \begin{columns}[T]
+    \begin{column}{0.55\textwidth}
+      \centering
+      \includegraphics[height=0.7\textheight]{attractor_gap.png}
+    \end{column}
+    \begin{column}{0.45\textwidth}
+      \small
+      \begin{itemize}
+        \item Gap $=$ acc(no-attractor) $-$ acc(attractor)
+        \item Grows monotonically: $0.073 \to 0.198$
+        \item Index of reliance on the \emph{linear} nearest-noun rule
+        \item[$\Rightarrow$] noise pushes the model toward the shortcut
+      \end{itemize}
+    \end{column}
+  \end{columns}
 \end{frame}
 
 \begin{frame}{Accuracy by attractor presence}
-  % TODO (Sanjana): split attractor vs. no-attractor items.
-  \centering
-  % \includegraphics[height=0.7\textheight]{acc_by_attractor.png}
-  TODO: \texttt{acc\_by\_attractor.png}
+  \begin{columns}[T]
+    \begin{column}{0.55\textwidth}
+      \centering
+      \includegraphics[height=0.7\textheight]{acc_by_attractor.png}
+    \end{column}
+    \begin{column}{0.45\textwidth}
+      \small
+      \begin{itemize}
+        \item No-attractor items stay $>0.94$ until $50\%$
+        \item Attractor items fall to near chance ($0.525$)
+        \item The two rules disagree only on attractor items
+        \item[$\Rightarrow$] that is exactly where noise bites first
+      \end{itemize}
+    \end{column}
+  \end{columns}
 \end{frame}
 
 \begin{frame}{Learning trajectories: delay vs.\ prevention}
-  % TODO (Sanjana): low noise climbs to ~0.96 (delay); 50% plateaus (prevention).
-  \centering
-  % \includegraphics[height=0.7\textheight]{acc_trajectory.png}
-  TODO: \texttt{acc\_trajectory.png}
+  \begin{columns}[T]
+    \begin{column}{0.55\textwidth}
+      \centering
+      \includegraphics[height=0.7\textheight]{acc_trajectory.png}
+    \end{column}
+    \begin{column}{0.45\textwidth}
+      \small
+      \begin{itemize}
+        \item $\le 10\%$ noise: same endpoint, just slower $\to$ \textbf{delay}
+        \item $50\%$ noise: plateaus at $\sim 0.69$, never learns $\to$ \textbf{prevention}
+        \item Clean: gap shrinks with training ($0.15 \to 0.05$)
+        \item $50\%$: gap \emph{grows} with training ($0.14 \to 0.20$)
+      \end{itemize}
+    \end{column}
+  \end{columns}
 \end{frame}

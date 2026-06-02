@@ -2,18 +2,41 @@
 
 % OWNER: Sanjana Garimella (discussion per proposal)
 
-\begin{frame}{Does structure buy robustness?}
-  % TODO (Sanjana): answer the RNNG-vs-LSTM question; tie to the
-  % poverty-of-the-stimulus framing.
+\begin{frame}{When does the rule break?}
   \begin{itemize}
-    \item TODO
+    \item \textbf{Threshold, not gradual}: absorbs noise up to $10\%$, snaps at $50\%$
+      --- like a child's grammar surviving occasional speech errors.
+    \item \textbf{Attractor gap is the early warning}: it climbs ($0.07 \to 0.20$)
+      while overall accuracy still looks healthy.
+    \item \textbf{Delay vs.\ prevention}: low noise only \emph{delays} acquisition
+      (curves converge); $50\%$ noise \emph{prevents} it and entrenches the linear rule.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Does structure buy robustness?}
+  \begin{itemize}
+    \item The headline question --- does a syntactic prior (RNNG) resist noise
+      better than a sequential LSTM? --- needs the RNNG runs (in progress).
+    \item \textbf{LSTM baseline}: no explicit hierarchy bias $\Rightarrow$ learns the
+      rule cleanly when input is clean, but drifts to the linear shortcut as noise grows.
+    \item If RNNG holds the hierarchical rule where the LSTM has caved
+      $\Rightarrow$ structure buys robustness.
+    \item If both fail together $\Rightarrow$ the bottleneck is input quality, not
+      architecture --- speaking to poverty-of-the-stimulus.
   \end{itemize}
 \end{frame}
 
 \begin{frame}{Takeaways and future work}
-  % TODO (Sanjana): headline findings; limitations (synthetic noise, templatic
-  % corpus, RNNG tree quality); next steps (naturalistic noise, scale, ON-LSTM).
+  \textbf{Takeaways}
   \begin{itemize}
-    \item TODO
+    \item LSTMs tolerate moderate SVA noise but have a sharp breaking point.
+    \item Noise trades the hierarchical rule for the linear nearest-noun heuristic.
+    \item Heavy noise prevents acquisition outright --- more training makes it worse.
+  \end{itemize}
+  \textbf{Limitations \& next steps}
+  \begin{itemize}
+    \item Synthetic, uniform noise; templatic corpus; single-seed trajectories.
+    \item Complete the RNNG arm; try ON-LSTM as a no-gold-tree syntactic baseline.
+    \item Move toward naturalistic, frequency-dependent noise and larger scale.
   \end{itemize}
 \end{frame}
