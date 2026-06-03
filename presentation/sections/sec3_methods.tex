@@ -4,8 +4,8 @@
 
 \begin{frame}{Noise injection: five corrupted corpora}
   \begin{itemize}
-    \item Base: Linzen et al.\ (2016) SVA corpus --- $\sim$1.58M Wikipedia
-          sentences, vocab capped at the 10K most frequent types.
+    \item Base: Linzen et al.\ (2016) SVA corpus, $\sim$1.58M Wikipedia
+          sentences with vocab capped at the 10K most frequent types.
     \item Each sentence annotated with subject, verb, verb position, and
           \# intervening attractor nouns.
     \item Build five training corpora, identical except agreement noise:
@@ -28,7 +28,7 @@
           $\Rightarrow$ no test leakage under any noise condition.
     \item Test items built from the \textbf{uncorrupted} source
           $\Rightarrow$ all test sentences are grammatical.
-    \item Same test set for all conditions --- only training noise varies.
+    \item Same test set for all conditions. Only the training noise varies.
   \end{itemize}
 \end{frame}
 
@@ -47,15 +47,15 @@
 
 \begin{frame}{Models}
   \begin{itemize}
-    \item \textbf{Sequential baseline} --- word-level LSTM LM
-          (Linzen 2016 / Gulordava 2018 style): 2 layers, tied embeddings,
-          dropout; trained from scratch per condition.
-    \item \textbf{Structurally-biased} --- RNNG (Dyer et al.\ 2016):
-          explicit hierarchical structure.
+    \item \textbf{Sequential baseline:} word-level LSTM LM
+          (Linzen 2016 / Gulordava 2018 style). 2 layers, tied embeddings,
+          dropout. Trained from scratch per condition.
+    \item \textbf{Structurally-biased:} RNNG (Dyer et al.\ 2016),
+          which builds explicit hierarchical structure.
     \item Core question: does a structural bias make hierarchical agreement
           \emph{more robust} to noisy supervision?
-    \item Fallback: ON-LSTM (Shen et al.\ 2019) --- softer structural bias,
-          no parse supervision needed.
+    \item Fallback: ON-LSTM (Shen et al.\ 2019), which has a softer structural
+          bias and doesn't need parse supervision.
   \end{itemize}
 \end{frame}
 
