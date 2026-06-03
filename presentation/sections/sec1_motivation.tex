@@ -2,24 +2,50 @@
 
 % OWNER: Kelly Fu (intro per proposal)
 
-\begin{frame}{Motivation: robust grammar from noisy input}
+\begin{frame}{Motivation: Can grammar survive noisy input?}
   % TODO (Kelly): children acquire robust SVA despite noisy input (speech
   % errors, non-native speech, agreement violations).
   % TODO (Kelly): poverty-of-the-stimulus framing -> how robust are LMs?
-  \begin{itemize}
-  
+\begin{itemize}
+\item Children acquire robust grammatical systems despite hearing noisy and imperfect language
+\item This observation motivates the classic \textbf{Poverty of the Stimulus} debate:
 
-  \end{itemize}
+      Is grammar learned from data, or supported by innate structure?
+\item Human experiments cannot systematically manipulate children's linguistic input
+\item Neural language models provide a controllable testbed:
+\begin{itemize}
+\item architecture = innate structure
+\item training corpus = linguistic environment
+\end{itemize}
+
+\end{itemize}
+
 \end{frame}
 
-\begin{frame}{Research questions}
-  % TODO (Kelly): the three RQs from the proposal.
-  \begin{enumerate}
-\item TODO: can injected SVA errors delay/prevent the hierarchical rule?
-\item TODO: is the linear rule equally learnable under noise?
-\item TODO: do RNNG vs.\ LSTM differ in robustness?
-    
+
+\begin{frame}{Research Questions}
+
+\textbf{RQ1: Can grammar be learned from noisy input?}
+
+\begin{itemize}
+    \item How much grammatical corruption can a model tolerate?
+    \item Is there a critical noise threshold beyond which acquisition breaks down?
+\end{itemize}
 
 
-  \end{enumerate}
+\textbf{RQ2: How does noise change generalization?}
+
+\begin{itemize}
+    \item Does the model maintain a hierarchical syntactic rule?
+    \item Or does it fall back on a simpler linear nearest-noun heuristic?
+\end{itemize}
+
+
+\textbf{RQ3: Does structure buy robustness?}
+
+\begin{itemize}
+    \item Compare LSTM and RNNG under identical noise conditions.
+    \item Does explicit syntactic bias help preserve grammatical learning?
+\end{itemize}
+
 \end{frame}
