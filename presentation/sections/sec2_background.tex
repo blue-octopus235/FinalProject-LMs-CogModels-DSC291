@@ -2,27 +2,148 @@
 
 % OWNER: Kelly Fu (background per proposal)
 
-\begin{frame}{Subject--verb agreement: hierarchical vs.\ linear}
+\begin{frame}{Subject--verb agreement: hierarchical vs.\ linear & Attractors as the diagnostic case}
+  % I combined 2 parts together since they are both talking about hierarchical vs.\ linear.
   % TODO (Kelly): hierarchical rule (agree with true subject) vs. linear
   % heuristic (agree with nearest noun); attractor example
   % "the keys to the cabinet are/is...".
   \begin{itemize}
-    \item TODO
-  \end{itemize}
+  %  \item TODO
+
+\item \textbf{Hierarchical rule}: agree with the true subject.
+\item \textbf{Linear rule}: agree with the noun closest to the verb.
+\end{itemize}
+
+
+\textbf{Example}
+
+\begin{quote}
+The keys to the cabinet ___ on the table.
+\end{quote}
+
+\begin{itemize}
+\item True subject = \textit{keys} 
+\item Nearest noun = \textit{cabinet} 
+\end{itemize}
+
+\begin{itemize}
+\item Hierarchical rule $\Rightarrow$ \textbf{are}
+\item Linear heuristic $\Rightarrow$ \textbf{is}
+\end{itemize}
+
+
+\textbf{Key idea:} SVA creates cases where the two rules make different predictions.
+
 \end{frame}
 
 \begin{frame}{Attractors as the diagnostic case}
   % TODO (Kelly): why the attractor gap dissociates the two rules; minimal
   % pair evaluation paradigm (BLiMP / SyntaxGym lineage).
-  \begin{itemize}
-    \item TODO
-  \end{itemize}
+
+    \begin{itemize}
+    \item Both rules make different predictions.
+    \item Success requires ignoring misleading linear cues.
+    \item Attractor accuracy reveals the model's generalization strategy.
+\end{itemize}
+
 \end{frame}
+
+
+
+
+\begin{frame}{Architectural Inductive Biases}
+
+\textbf{Two competing learners}
+
+\vspace{0.2cm}
+
+\begin{columns}[T]
+
+\column{0.48\textwidth}
+
+\textbf{LSTM}
+
+\begin{itemize}
+    \item Sequential recurrent model
+    \item Processes sentences word by word
+    \item No explicit syntactic structure
+    \item Learns grammar from statistical regularities
+\end{itemize}
+
+\vspace{0.2cm}
+
+\centering
+\textbf{Weak structural prior}
+
+\column{0.48\textwidth}
+
+\textbf{RNNG}
+
+\begin{itemize}
+    \item Generates sentences and parse trees jointly
+    \item Explicit hierarchical representations
+    \item Encodes phrase structure directly
+    \item Strong syntactic inductive bias
+\end{itemize}
+
+\vspace{0.2cm}
+
+\centering
+\textbf{Strong structural prior}
+
+\end{columns}
+
+\vspace{0.5cm}
+
+\textbf{Key Question}
+
+\begin{center}
+Does explicit syntactic structure help preserve hierarchical grammatical rules under noisy input?
+\end{center}
+
+\end{frame}
+
 
 \begin{frame}{Prior work}
   % TODO (Kelly): Linzen 2016, Gulordava 2018 (LSTMs), Dyer 2016 / Kuncoro
   % 2018 (RNNG structural bias). Gap: behavior under *noisy* supervision.
-  \begin{itemize}
-    \item TODO
-  \end{itemize}
+  \begin{frame}{Related Work and Research Gap}
+
+\textbf{SVA as a syntax benchmark}
+
+\begin{itemize}
+\item Linzen (2016): LSTMs learn agreement but struggle with attractors.
+\item Gulordava (2018): evidence for abstract syntactic generalization.
+\end{itemize}
+
+\vspace{0.2cm}
+
+\textbf{Structural inductive bias}
+
+\begin{itemize}
+\item Dyer (2016): Recurrent Neural Network Grammar (RNNG).
+\item Kuncoro (2018): explicit syntax improves long-distance dependencies.
+\end{itemize}
+
+\vspace{0.2cm}
+
+\begin{itemize}
+\item Prior work studies noisy inputs and grammatical corruption.
+\item Focus is typically on downstream performance.
+\end{itemize}
+
+\textbf{Research gap}
+
+\begin{itemize}
+\item Little work asks whether grammatical rules themselves can still be acquired under noisy supervision.
+\item No systematic study of how SVA corruption affects:
+\begin{itemize}
+\item rule acquisition,
+\item hierarchical vs. linear generalization,
+\item LSTM vs. RNNG robustness.
+\end{itemize}
+\end{itemize}
+
+\end{frame}
+
 \end{frame}
