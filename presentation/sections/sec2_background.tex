@@ -9,29 +9,23 @@
   % "the keys to the cabinet are/is...".
   \begin{itemize}
   %  \item TODO
-Subject–verb agreement (SVA) has become one of the most widely used benchmarks for studying syntactic competence in language models. Early work used SVA to investigate whether recurrent neural networks can learn syntax-sensitive dependencies and demonstrated that models are capable of capturing certain long-distance relationships, although they remain vulnerable to interference from attractor nouns. Later studies showed that language models can acquire abstract syntactic regularities that go beyond simple lexical co-occurrence statistics, even when semantic information is largely removed. Subsequent work expanded SVA-based evaluation to a broader range of syntactic phenomena and established minimal-pair testing as a standard methodology for probing grammatical knowledge.
 
-One reason SVA is particularly useful is that successful performance requires identifying the true subject of a sentence while ignoring intervening nouns that may provide misleading linear cues. In attractor constructions, the true subject and the noun closest to the verb differ in grammatical number, creating a direct conflict between hierarchical agreement and linear agreement. For example, in a sentence such as The key to the cabinets is..., a model following a hierarchical rule should agree with the true subject key, whereas a model relying on a linear strategy may incorrectly agree with the more recent noun cabinets. Because the two strategies make different predictions in attractor conditions, these constructions provide a natural diagnostic test for distinguishing hierarchical syntactic representations from simpler linear heuristics. Combined with the minimal-pair evaluation paradigm adopted by benchmarks such as BLiMP and SyntaxGym, SVA offers a principled framework for measuring not only whether a model learns grammatical rules, but also what type of generalization strategy it relies on. This makes SVA particularly well suited for studying how grammatical noise influences rule acquisition and syntactic generalization.
 
   \end{itemize}
 \end{frame}
 
-%\begin{frame}{Attractors as the diagnostic case}
+\begin{frame}{Attractors as the diagnostic case}
   % TODO (Kelly): why the attractor gap dissociates the two rules; minimal
   % pair evaluation paradigm (BLiMP / SyntaxGym lineage).
-  %\begin{itemize}
-   % \item TODO
+  \begin{itemize}
+    \item TODO
 %  \end{itemize}
 %\end{frame}
 
 \begin{frame}{Architectural inductive biases: LSTM and RNNG}
-  % I added this part
+  
   \begin{itemize}
-    Building on this framework, we compare two classes of neural language models with different inductive biases. The first is the Long Short-Term Memory network (LSTM), a sequential recurrent architecture that processes sentences word by word and has served as a standard baseline in much of the SVA literature. Previous studies have shown that LSTMs can learn certain long-distance agreement dependencies and exhibit limited hierarchical generalization. However, because they do not explicitly encode syntactic tree structures, they remain susceptible to interference in syntactically complex environments.
-
-The second model is the Recurrent Neural Network Grammar (RNNG), which incorporates an explicit syntactic inductive bias by jointly generating sentences and their parse trees. By directly representing hierarchical phrase structure, RNNGs provide a stronger structural prior than purely sequential models. Previous work has shown that structurally supervised models often outperform sequence models on long-distance and non-local syntactic dependencies and display more human-like patterns of generalization.
-
-These two architectures therefore provide a useful contrast for studying the role of structural inductive bias in grammatical learning. In the context of noisy linguistic input, comparing LSTMs and RNNGs allows us to investigate whether explicit syntactic structure helps preserve hierarchical grammatical representations when reliable grammatical evidence becomes scarce.
+   
   \end{itemize}
 \end{frame}
 
@@ -41,10 +35,6 @@ These two architectures therefore provide a useful contrast for studying the rol
   % 2018 (RNNG structural bias). Gap: behavior under *noisy* supervision.
   \begin{itemize}
    % \item TODO
-    More recently, a growing body of work has investigated the robustness of language models under noisy linguistic conditions. Existing studies have shown that model behavior is sensitive to both the amount and type of grammatical corruption, whether grammatical errors are introduced during evaluation or incorporated into training data through naturally occurring learner errors. These findings suggest that grammatical noise can influence not only downstream task performance but also the learning process itself, making controlled noise injection a meaningful experimental methodology.
-
-Despite this progress, most prior work has focused on robustness to noisy inputs or on the effect of grammatical corruption on overall model performance. Much less attention has been paid to whether grammatical rules themselves can still be acquired when the training environment is systematically degraded. In particular, studies of subject--verb agreement have largely assumed naturally occurring training corpora and examined whether models learn hierarchical syntactic dependencies under standard learning conditions.
-
-Our work addresses this gap by systematically injecting subject--verb agreement errors into the training data and varying the degree of grammatical corruption. This allows us to investigate whether language models can still acquire the correct agreement rule under increasingly noisy conditions, whether their generalization strategies shift from hierarchical rules toward simpler linear heuristics, and whether explicit structural inductive bias improves the robustness of grammatical learning. In this way, we connect research on syntactic competence, grammatical noise, and inductive bias within a unified experimental framework.
+    
   \end{itemize}
 \end{frame}
