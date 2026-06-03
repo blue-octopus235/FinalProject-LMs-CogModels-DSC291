@@ -74,3 +74,28 @@
     \end{column}
   \end{columns}
 \end{frame}
+
+% ===========================================================================
+% RNNG DROP-IN SLIDE (preliminary). Uncomment once Jackson pushes
+% results/rnng_eval_results.csv and `python src/plots_compare.py` has written
+% results/compare_acc_vs_noise.png. Fill the bracketed takeaway from the data.
+% ---------------------------------------------------------------------------
+% \begin{frame}{Preliminary: RNNG vs.\ LSTM}
+%   \begin{columns}[T]
+%     \begin{column}{0.55\textwidth}
+%       \centering
+%       \includegraphics[height=0.7\textheight]{compare_acc_vs_noise.png}
+%     \end{column}
+%     \begin{column}{0.45\textwidth}
+%       \small
+%       \begin{itemize}
+%         \item \textbf{Preliminary}: 1 seed, 3 conditions, reduced training
+%         \item RNNG = explicit syntactic bias; LSTM = sequential baseline
+%         \item [TODO: does RNNG hold accuracy / a smaller attractor gap
+%               at high noise?]
+%         \item Full matched sweep is paper-phase ($\sim$58 GPU-hrs)
+%       \end{itemize}
+%     \end{column}
+%   \end{columns}
+% \end{frame}
+% ===========================================================================
