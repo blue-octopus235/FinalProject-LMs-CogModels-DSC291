@@ -107,3 +107,26 @@ entrenches the linear heuristic rather than correcting it.
     (delay); the $50\%$ condition plateaus well below the others (prevention).}
   \label{fig:acc_trajectory}
 \end{figure}
+
+% ===========================================================================
+% RNNG DROP-IN (preliminary). Uncomment once Jackson pushes
+% results/rnng_eval_results.csv and `python src/plots_compare.py` has written
+% results/compare_acc_vs_noise.png. Fill the three XX.X accuracy numbers from
+% the CSV (baseline / medium_high / high). 1 seed, 3 conditions, reduced epochs.
+% ---------------------------------------------------------------------------
+% \subsection{Preliminary: RNNG vs.\ LSTM}
+% As a first architectural comparison we trained the syntactically biased RNNG
+% on a reduced protocol (single seed, three conditions---baseline, medium-high,
+% high---and fewer epochs than the LSTM), so these results indicate a
+% \emph{direction} rather than a significance-tested effect
+% (Figure~\ref{fig:compare_acc}). [TODO: one sentence stating whether RNNG holds
+% accuracy / a smaller attractor gap than the LSTM at matched noise: RNNG
+% accuracy XX.X / XX.X / XX.X vs.\ LSTM 0.961 / 0.934 / 0.708.]
+% \begin{figure}[t]
+%   \centering
+%   \includegraphics[width=\linewidth]{compare_acc_vs_noise.png}
+%   \caption{Preliminary LSTM vs.\ RNNG minimal-pair accuracy across noise rates
+%     (RNNG: single seed, three conditions, reduced training).}
+%   \label{fig:compare_acc}
+% \end{figure}
+% ===========================================================================

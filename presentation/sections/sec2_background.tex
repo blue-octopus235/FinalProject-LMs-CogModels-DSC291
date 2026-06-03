@@ -1,149 +1,102 @@
 \section{Background}
 
-% OWNER: Kelly Fu (background per proposal)
-
-\begin{frame}{Subject--verb agreement: hierarchical vs.\ linear & Attractors as the diagnostic case}
-  % I combined 2 parts together since they are both talking about hierarchical vs.\ linear.
-  % TODO (Kelly): hierarchical rule (agree with true subject) vs. linear
-  % heuristic (agree with nearest noun); attractor example
-  % "the keys to the cabinet are/is...".
+\begin{frame}{Subject--verb agreement: hierarchical vs.\ linear}
   \begin{itemize}
-  %  \item TODO
+    \item \textbf{Hierarchical rule}: agree with the true syntactic subject.
+    \item \textbf{Linear rule}: agree with the noun closest to the verb.
+  \end{itemize}
 
-\item \textbf{Hierarchical rule}: agree with the true subject.
-\item \textbf{Linear rule}: agree with the noun closest to the verb.
-\end{itemize}
+  \vspace{0.3cm}
+  \textbf{Example}
+  \begin{quote}
+    The keys to the cabinet \underline{\hspace{1cm}} on the table.
+  \end{quote}
 
+  \begin{columns}[T]
+    \column{0.5\textwidth}
+    \begin{itemize}
+      \item True subject $=$ \textit{keys} (plural)
+      \item Nearest noun $=$ \textit{cabinet} (singular)
+    \end{itemize}
+    \column{0.5\textwidth}
+    \begin{itemize}
+      \item Hierarchical $\Rightarrow$ \textbf{are}
+      \item Linear $\Rightarrow$ \textbf{is}
+    \end{itemize}
+  \end{columns}
 
-\textbf{Example}
-
-\begin{quote}
-The keys to the cabinet ___ on the table.
-\end{quote}
-
-\begin{itemize}
-\item True subject = \textit{keys} 
-\item Nearest noun = \textit{cabinet} 
-\end{itemize}
-
-\begin{itemize}
-\item Hierarchical rule $\Rightarrow$ \textbf{are}
-\item Linear heuristic $\Rightarrow$ \textbf{is}
-\end{itemize}
-
-
-\textbf{Key idea:} SVA creates cases where the two rules make different predictions.
-
+  \vspace{0.3cm}
+  \textbf{Key idea:} SVA with attractors creates cases where the two rules
+  make \emph{different} predictions. This is our diagnostic lever.
 \end{frame}
 
 \begin{frame}{Attractors as the diagnostic case}
-  % TODO (Kelly): why the attractor gap dissociates the two rules; minimal
-  % pair evaluation paradigm (BLiMP / SyntaxGym lineage).
+  \begin{itemize}
+    \item An \textbf{attractor} is an intervening noun that mismatches the
+          subject in number (e.g.\ \textit{cabinet} between
+          \textit{keys} and the verb).
+    \item On \textbf{no-attractor} items, both rules agree
+          $\Rightarrow$ accuracy is high for either strategy.
+    \item On \textbf{attractor} items, only the hierarchical rule is correct
+          $\Rightarrow$ success requires ignoring the misleading linear cue.
+    \item The \textbf{attractor gap} (no-attractor acc $-$ attractor acc)
+          measures how much the model relies on the linear shortcut.
+  \end{itemize}
+\end{frame}
 
+\begin{frame}{Architectural inductive biases}
+  \textbf{Two competing learners}
+
+  \vspace{0.2cm}
+  \begin{columns}[T]
+    \column{0.48\textwidth}
+    \textbf{LSTM}
     \begin{itemize}
-    \item Both rules make different predictions.
-    \item Success requires ignoring misleading linear cues.
-    \item Attractor accuracy reveals the model's generalization strategy.
-\end{itemize}
+      \item Sequential recurrent model
+      \item No explicit syntactic structure
+      \item Learns grammar from statistical regularities
+    \end{itemize}
+    \centering\vspace{0.2cm}
+    \textbf{Weak structural prior}
 
+    \column{0.48\textwidth}
+    \textbf{RNNG}
+    \begin{itemize}
+      \item Generates sentences and parse trees jointly
+      \item Explicit hierarchical representations
+      \item Strong syntactic inductive bias
+    \end{itemize}
+    \centering\vspace{0.2cm}
+    \textbf{Strong structural prior}
+  \end{columns}
+
+  \vspace{0.4cm}
+  \begin{center}
+    \textbf{Key question:} Does explicit syntactic structure help preserve
+    hierarchical rules under noisy input?
+  \end{center}
 \end{frame}
 
+\begin{frame}{Related work and research gap}
+  \textbf{SVA as a syntax benchmark}
+  \begin{itemize}
+    \item Linzen et al.\ (2016): LSTMs learn agreement but struggle with attractors.
+    \item Gulordava et al.\ (2018): evidence for abstract syntactic generalization.
+  \end{itemize}
 
+  \vspace{0.2cm}
+  \textbf{Structural inductive bias}
+  \begin{itemize}
+    \item Dyer et al.\ (2016): Recurrent Neural Network Grammar (RNNG).
+    \item Kuncoro et al.\ (2018): explicit syntax improves long-distance dependencies.
+  \end{itemize}
 
-
-\begin{frame}{Architectural Inductive Biases}
-
-\textbf{Two competing learners}
-
-\vspace{0.2cm}
-
-\begin{columns}[T]
-
-\column{0.48\textwidth}
-
-\textbf{LSTM}
-
-\begin{itemize}
-    \item Sequential recurrent model
-    \item Processes sentences word by word
-    \item No explicit syntactic structure
-    \item Learns grammar from statistical regularities
-\end{itemize}
-
-\vspace{0.2cm}
-
-\centering
-\textbf{Weak structural prior}
-
-\column{0.48\textwidth}
-
-\textbf{RNNG}
-
-\begin{itemize}
-    \item Generates sentences and parse trees jointly
-    \item Explicit hierarchical representations
-    \item Encodes phrase structure directly
-    \item Strong syntactic inductive bias
-\end{itemize}
-
-\vspace{0.2cm}
-
-\centering
-\textbf{Strong structural prior}
-
-\end{columns}
-
-\vspace{0.5cm}
-
-\textbf{Key Question}
-
-\begin{center}
-Does explicit syntactic structure help preserve hierarchical grammatical rules under noisy input?
-\end{center}
-
-\end{frame}
-
-
-\begin{frame}{Prior work}
-  % TODO (Kelly): Linzen 2016, Gulordava 2018 (LSTMs), Dyer 2016 / Kuncoro
-  % 2018 (RNNG structural bias). Gap: behavior under *noisy* supervision.
-  \begin{frame}{Related Work and Research Gap}
-
-\textbf{SVA as a syntax benchmark}
-
-\begin{itemize}
-\item Linzen (2016): LSTMs learn agreement but struggle with attractors.
-\item Gulordava (2018): evidence for abstract syntactic generalization.
-\end{itemize}
-
-\vspace{0.2cm}
-
-\textbf{Structural inductive bias}
-
-\begin{itemize}
-\item Dyer (2016): Recurrent Neural Network Grammar (RNNG).
-\item Kuncoro (2018): explicit syntax improves long-distance dependencies.
-\end{itemize}
-
-\vspace{0.2cm}
-
-\begin{itemize}
-\item Prior work studies noisy inputs and grammatical corruption.
-\item Focus is typically on downstream performance.
-\end{itemize}
-
-\textbf{Research gap}
-
-\begin{itemize}
-\item Little work asks whether grammatical rules themselves can still be acquired under noisy supervision.
-\item No systematic study of how SVA corruption affects:
-\begin{itemize}
-\item rule acquisition,
-\item hierarchical vs. linear generalization,
-\item LSTM vs. RNNG robustness.
-\end{itemize}
-\end{itemize}
-
-\end{frame}
-
+  \vspace{0.2cm}
+  \textbf{Research gap}
+  \begin{itemize}
+    \item Prior work tests models on clean data; little asks whether
+          grammatical rules can still be \emph{acquired} under noisy supervision.
+    \item No systematic study of how SVA corruption affects rule acquisition,
+          hierarchical vs.\ linear generalization, or LSTM vs.\ RNNG robustness.
+  \end{itemize}
 \end{frame}
