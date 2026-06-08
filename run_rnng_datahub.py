@@ -40,15 +40,56 @@ def banner(msg):
     print(f'\n{"="*60}\n  {msg}\n{"="*60}', flush=True)
 
 
+_NOISE_PATTERNS = (
+    'external/local_xla',   # TF CUDA plugin registration errors
+    'tensorflow',           # TF oneDNN suggestion
+    'numexpr.utils:INFO',   # NumExpr thread-count message
+    'SyntaxWarning',        # rnng-pytorch utils.py literal comparison
+    'while stack[-1]',      # SyntaxWarning continuation line
+)
+
+
+def _is_parse_tree(line: str) -> bool:
+    # beam_search.py prints every inferred tree to stdout. Trees use the
+    # placeholder token format "(X word)" throughout. When piped (non-TTY),
+    # tqdm doesn't emit a newline before the print(), so the tree can be
+    # appended to a progress-bar line — check anywhere in the line.
+    return '(X ' in line
+
+_SUPPRESS_ENV = {
+    **os.environ,
+    'TF_CPP_MIN_LOG_LEVEL': '3',
+    'NUMEXPR_MAX_THREADS': '8',
+    'PYTHONWARNINGS': 'ignore::SyntaxWarning',
+}
+
+
 def run_streaming(cmd, cwd, label):
     """Run a subprocess, stream output live, raise on non-zero exit."""
     print(f'[{label}] Running: {" ".join(str(c) for c in cmd)}', flush=True)
     tail = []
+    in_model_block = False
     proc = subprocess.Popen(
         [str(c) for c in cmd], cwd=str(cwd),
         stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True,
+        env=_SUPPRESS_ENV,
     )
     for line in proc.stdout:
+        # Suppress the model-architecture block. It spans two logger.info calls:
+        #   "model architecture"         <- trigger line
+        #   model (FixedStackRNNG(...))  <- second call, starts with timestamp prefix
+        # followed by indented module lines and ended by a bare ')' at column 0.
+        if '__main__:INFO: model architecture' in line:
+            in_model_block = True
+            continue
+        if in_model_block:
+            # rstrip() keeps leading spaces, so '  )' != ')'; only the unindented
+            # outer closing paren signals the end of the repr.
+            if line.rstrip() == ')':
+                in_model_block = False
+            continue  # skip every line inside the block, including the final ')'
+        if any(p in line for p in _NOISE_PATTERNS) or _is_parse_tree(line):
+            continue
         print(line, end='', flush=True)
         tail.append(line)
         if len(tail) > 120:
