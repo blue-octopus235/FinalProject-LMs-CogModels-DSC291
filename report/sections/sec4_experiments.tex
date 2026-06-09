@@ -45,9 +45,11 @@ We test three preregistered hypotheses:
   \item \textbf{H3.} The RNNG's attractor gap widens \emph{more slowly} than the
     LSTM's; an explicit structural bias buys robustness to noisy supervision.
 \end{itemize}
-H3 is evaluated on the matched subset (Section~\ref{sec:metrics}). Because only
-three seeds are available, we test the per-condition gap difference
-$\Delta_{\text{LSTM}} - \Delta_{\text{RNNG}}$ with a pair-level bootstrap
-(resampling the matched pairs, $10^{4}$ replicates) for a 95\% confidence
-interval and a one-sided $p$-value, and report the seed-level mean $\pm$ std as
-descriptive context.
+H3 is evaluated on the matched subset (Section~\ref{sec:metrics}). We summarize
+the per-condition gap difference $\Delta_{\text{LSTM}} - \Delta_{\text{RNNG}}$
+with a pair-level bootstrap (resampling the matched pairs, $10^{4}$ replicates)
+and report the 95\% confidence interval; we treat the difference as reliable when
+this interval excludes zero. This bootstrap reflects item-sampling uncertainty
+\emph{conditional on the trained models}, while variability due to training is
+captured by the seed-level mean $\pm$ std, which we report alongside it (with
+only three seeds, the seed spread is descriptive rather than a formal test).

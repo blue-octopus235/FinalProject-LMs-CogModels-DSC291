@@ -4,9 +4,11 @@ Compares LSTM vs. RNNG on the MATCHED subset (results/matched_idx.json from
 src/match_subset.py), per noise condition. Two complementary readouts:
 
   * Pair-level bootstrap (primary): resample the matched pairs with replacement and
-    recompute Δgap = gap_LSTM - gap_RNNG. Reports a 95% CI and a one-sided bootstrap
-    p-value (fraction of resamples with Δgap <= 0). Uses thousands of pairs, so it does
-    not lean on the 3 seeds. Same for Δacc_all.
+    recompute Δgap = gap_LSTM - gap_RNNG. Reports a 95% CI and the bootstrap mass at or
+    below zero (a naive bootstrap proportion, NOT a null-hypothesis p-value — make the
+    H3 claim from the CI excluding zero). This captures item-sampling uncertainty
+    CONDITIONAL on the three trained models; training variability is reflected by the
+    seed spread below. Same for Δacc_all.
   * Seed-level summary (secondary, n=3): mean ± std of each model's gap and the paired
     Δgap across seeds — descriptive context only (small n).
 
@@ -152,7 +154,8 @@ def main():
             boot_dacc[b] = la.mean() - ra.mean()
         bd = boot_dgap[~np.isnan(boot_dgap)]
         ci_lo, ci_hi = np.percentile(bd, [2.5, 97.5])
-        p_dgap = float(np.mean(bd <= 0))          # H1: LSTM gap > RNNG gap (dgap > 0)
+        # bootstrap mass at/below zero (NOT a p-value); H3 claim rests on CI > 0
+        mass_le0 = float(np.mean(bd <= 0))
         acc_lo, acc_hi = np.percentile(boot_dacc, [2.5, 97.5])
 
         # seed-level (n=3) summary
@@ -163,7 +166,7 @@ def main():
             "gap_lstm": round(gap_l, 4), "gap_rnng": round(gap_r, 4),
             "delta_gap": round(dgap, 4),
             "delta_gap_ci_lo": round(ci_lo, 4), "delta_gap_ci_hi": round(ci_hi, 4),
-            "delta_gap_p": round(p_dgap, 4),
+            "delta_gap_boot_mass_le0": round(mass_le0, 4),
             "delta_acc_all": round(dacc, 4),
             "delta_acc_ci_lo": round(acc_lo, 4), "delta_acc_ci_hi": round(acc_hi, 4),
             "gap_lstm_seedmean": round(float(np.mean(l_seed_gaps)), 4),
@@ -183,15 +186,16 @@ def main():
         w.writerows(rows)
 
     print(f"\n{'cond':<12} {'gap_LSTM':>9} {'gap_RNNG':>9} {'Δgap':>8} "
-          f"{'95% CI':>16} {'p(Δgap<=0)':>11}")
+          f"{'95% CI':>16} {'mass<=0':>9}")
     for r in rows:
         print(f"{r['condition']:<12} {r['gap_lstm']:>9.3f} {r['gap_rnng']:>9.3f} "
               f"{r['delta_gap']:>8.3f} "
               f"[{r['delta_gap_ci_lo']:>6.3f},{r['delta_gap_ci_hi']:>6.3f}] "
-              f"{r['delta_gap_p']:>11.4f}")
+              f"{r['delta_gap_boot_mass_le0']:>9.4f}")
     print(f"\nWrote {args.out_csv}")
     print("Δgap > 0 means the LSTM relies on the linear cue MORE than the RNNG "
-          "(supports H3). p is the one-sided bootstrap mass at/below 0.")
+          "(supports H3). Make the claim from the 95% CI excluding 0; 'mass<=0' is "
+          "the bootstrap proportion at/below 0, not a null-hypothesis p-value.")
 
 
 if __name__ == "__main__":
