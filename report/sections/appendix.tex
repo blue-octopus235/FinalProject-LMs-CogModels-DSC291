@@ -2,11 +2,80 @@
 \label{app:repro}
 
 % OWNER: Jackson Wilke (methods/infra per proposal)
-% TODO (Jackson): code pipeline (data_utils -> train -> evaluate -> plots); commands;
-%       full hyperparameter table for LSTM and RNNG.
+
+\paragraph{Pipeline.} The LSTM pipeline is
+\texttt{data\_utils} $\to$ \texttt{train} $\to$ checkpoint $\to$
+\texttt{evaluate} $\to$ \texttt{results/eval\_results.csv} $\to$ \texttt{plots}.
+\texttt{data\_utils} builds the shared vocabulary and the fixed 20K held-out
+indices; \texttt{minimal\_pairs} and \texttt{verb\_flip} construct the leak-free
+test pairs from the clean corpus. The RNNG pipeline
+(\texttt{run\_rnng\_datahub.py}) parses the clean corpus once with the Berkeley
+Neural Parser, swaps the verb terminal per noise condition, runs the
+\texttt{rnng-pytorch} preprocessing and training, and scores the shared minimal
+pairs by beam search.
+
+\paragraph{Matched-subset comparison (H3).} Because the RNNG and LSTM cover
+slightly different pair sets (Section~\ref{sec:metrics}), the cross-model
+comparison is computed on their intersection:
+\begin{enumerate}
+  \item \texttt{run\_rnng\_datahub.py -{}-seeds 1 2 3} writes per-pair records
+    (\texttt{results/rnng\_pairs\_*.csv}) and the indices each run could score.
+  \item \texttt{src/match\_subset.py} forms the matched index set
+    (RNNG-covered $\cap$ LSTM-in-vocabulary) and recomputes RNNG metrics on it.
+  \item \texttt{src/evaluate.py -{}-restrict\_indices results/matched\_idx.json}
+    re-scores each LSTM checkpoint on the same subset.
+  \item \texttt{src/combined\_plots.py} produces the side-by-side figures, and
+    \texttt{src/stats\_h3.py} computes the per-condition gap difference with its
+    bootstrap confidence interval and $p$-value.
+\end{enumerate}
+
+\paragraph{Validity checks.} The RNNG run also emits a per-epoch validation
+perplexity log (\texttt{results/rnng\_train\_ppl.csv}) to confirm convergence,
+and a parser-quality summary plus a sample of parsed trees
+(\texttt{results/rnng\_parse\_quality.json}, \texttt{rnng\_tree\_sample.txt}) for
+hand-inspection, since parser quality on lowercased, anonymized tokens bounds the
+RNNG's ceiling.
+
+\begin{table}[t]
+  \centering
+  \small
+  \begin{tabular}{lcc}
+    \toprule
+    Hyperparameter & LSTM & RNNG \\
+    \midrule
+    Embedding / word dim   & 256 & 256 \\
+    Hidden dim             & 256 & 256 \\
+    Layers                 & 2   & 2 \\
+    Dropout                & 0.2 & 0.3 \\
+    Tied embeddings        & yes & --- \\
+    Optimizer              & Adam & Adam \\
+    Learning rate          & $10^{-3}$ & $10^{-3}$ \\
+    Batch size             & 64  & 128 (15K-token cap) \\
+    Gradient clip          & 1.0 & --- \\
+    Epochs                 & 5   & 8 \\
+    Sentences / condition  & 150K & 150K \\
+    Vocabulary             & 10K (shared) & 10K (shared) \\
+    Decoding               & next-token & beam 100 / word-beam 20 \\
+    \bottomrule
+  \end{tabular}
+  \caption{Hyperparameters for the LSTM and RNNG. Embedding, hidden size,
+    optimizer, and training-set size are matched; the RNNG additionally consumes
+    benepar parse trees and is decoded by word-synchronous beam search.}
+  \label{tab:hparams}
+\end{table}
 
 \section{Additional Figures}
 \label{app:figures}
 
-% TODO: trajectory plots (acc_trajectory.png, gap_trajectory.png) if not in
-%       the main text.
+Figure~\ref{fig:gap_trajectory} shows the attractor-gap trajectory over training
+(companion to the accuracy trajectory in Section~\ref{sec:results}): the gap
+shrinks over training in low-noise conditions as the hierarchical rule
+consolidates, but grows in the 50\% condition as additional exposure entrenches
+the linear heuristic.
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\linewidth]{gap_trajectory.png}
+  \caption{Attractor gap over training steps, one curve per noise condition.}
+  \label{fig:gap_trajectory}
+\end{figure}

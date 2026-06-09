@@ -66,6 +66,19 @@ short.
   (RNNG scored on 2,654 pairs vs. the LSTM's 19,819) in the docs. (`run_rnng_datahub.py`,
   `src/combined_plots.py`, `results/`)
 
+- **2026-06-08** — Added the matched-subset comparison machinery so LSTM/RNNG are
+  scored on identical pairs (`minimal_pairs` row-id, `evaluate.py --restrict_indices`,
+  `src/match_subset.py`) plus RNNG convergence/parse-quality sanity outputs. Wrote the
+  H3 significance helper `src/stats_h3.py` (pair-level bootstrap CI + one-sided p on the
+  LSTM−RNNG attractor-gap difference, reusing `evaluate.verb_logprobs`; seed-level mean±std
+  as context). Drafted my assigned report sections from the methods draft + project brief:
+  Methods (data/noise, leak-free protocol, minimal pairs, models, metrics + cross-model
+  comparability), Experimental Setup (hyperparameters, run grid, trajectory, H1–H3), and
+  the Appendix (reproducibility runbook + LSTM/RNNG hyperparameter table). Added the
+  missing references (Wilcox 2020, Shen 2019, Kitaev 2018, Noji & Oseki 2021); report
+  compiles. (`src/stats_h3.py`, `report/sections/sec3_methods.tex`, `sec4_experiments.tex`,
+  `appendix.tex`, `report/refs.bib`)
+
 - **2026-06-01** — Wrote the methods slides: filled the talk's methods section,
   expanding the stubs into five focused frames (noise injection + five corrupted
   corpora, leak-free 20k held-out protocol, the minimal-pair test, LSTM-vs-RNNG
