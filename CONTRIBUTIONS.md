@@ -53,6 +53,19 @@ short.
   frames pre-wired to `results/` figures via `\graphicspath`, plus a `latexmk`
   `Makefile` and `presentation/.gitignore`. Verified it compiles. (`presentation/`)
 
+- **2026-06-08** — Built the end-to-end RNNG train+eval pipeline for datahub.ucsd.edu
+  (`run_rnng_datahub.py`): parse the clean corpus once, swap the verb terminal per
+  noise condition, `preprocess.py`, train per condition/seed, then score the shared
+  minimal pairs via `beam_search.py` surprisals into `results/rnng_eval_results.csv`.
+  Added inline rnng-pytorch fixes (PyTorch-2.6 `weights_only`, NumPy-2.x) and live
+  output filtering. Ran **seed 1 across all 5 conditions** and wrote
+  `src/combined_plots.py` for the LSTM-vs-RNNG comparison figures
+  (`results/combined_*.png`). Headline: the RNNG attractor gap stays flat/low as noise
+  rises (0.05→0.11) where the LSTM's grows (0.07→0.20) — the H3 "structure buys
+  robustness" signal, pending seeds 2–3. Flagged the test-set comparability caveat
+  (RNNG scored on 2,654 pairs vs. the LSTM's 19,819) in the docs. (`run_rnng_datahub.py`,
+  `src/combined_plots.py`, `results/`)
+
 - **2026-06-01** — Wrote the methods slides: filled the talk's methods section,
   expanding the stubs into five focused frames (noise injection + five corrupted
   corpora, leak-free 20k held-out protocol, the minimal-pair test, LSTM-vs-RNNG

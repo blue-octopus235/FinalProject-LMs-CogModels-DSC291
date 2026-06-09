@@ -12,6 +12,7 @@ Writes one row to results/eval_results.csv.
 """
 import argparse
 import csv
+import json
 import math
 import os
 
@@ -83,6 +84,14 @@ def main():
     ap.add_argument("--out_dir", default="checkpoints")
     ap.add_argument("--results_csv", default="results/eval_results.csv")
     ap.add_argument("--seed", type=int, default=1)
+    ap.add_argument("--restrict_indices", default=None,
+                    help="JSON file with a list of source-row indices. If given, "
+                         "score only pairs whose 'idx' is in this set (for the "
+                         "matched LSTM-vs-RNNG comparison) and tag rows with a "
+                         "'subset' column.")
+    ap.add_argument("--subset_label", default="matched",
+                    help="Value written to the 'subset' column when "
+                         "--restrict_indices is used.")
     args = ap.parse_args()
 
     device = pick_device()
@@ -100,10 +109,21 @@ def main():
         os.path.join(args.data_dir, ORIGINAL_FILE), test_idx, vocab=vocab)
     print(f"[eval] usable pairs={len(pairs)}  skipped={skipped}")
 
+    if args.restrict_indices:
+        with open(args.restrict_indices) as f:
+            keep = set(json.load(f))
+        before = len(pairs)
+        pairs = [p for p in pairs if p["idx"] in keep]
+        print(f"[eval] restricted to {len(pairs)}/{before} pairs in "
+              f"{args.restrict_indices} (requested {len(keep)} indices) "
+              f"[subset={args.subset_label}]")
+
     lp_c, lp_i = verb_logprobs(model, vocab, pairs, device)
     res = summarize(pairs, lp_c, lp_i)
     res.update({"condition": args.condition, "rate": ckpt.get("rate"),
                 "seed": args.seed, "checkpoint": os.path.basename(args.checkpoint)})
+    if args.restrict_indices:
+        res["subset"] = args.subset_label
     for k, v in res.items():
         print(f"  {k}: {v}")
 
@@ -112,6 +132,8 @@ def main():
     cols = ["condition", "rate", "seed", "acc_all", "acc_no_attractor",
             "acc_attractor", "attractor_gap", "mean_surprisal_correct_bits",
             "n_all", "n_attractor", "n_no_attractor", "checkpoint"]
+    if args.restrict_indices:  # extra column only on matched-subset runs (back-compat)
+        cols.append("subset")
     with open(args.results_csv, "a", newline="") as f:
         w = csv.DictWriter(f, fieldnames=cols)
         if write_header:

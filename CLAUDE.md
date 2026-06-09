@@ -25,6 +25,12 @@ bash run_sweep_local.sh
 
 # Full multi-seed sweep (150k sentences, seeds 1-2-3 — use on Colab T4)
 bash run_sweep_multiseed.sh
+
+# RNNG train + eval, all conditions/seeds (run on datahub.ucsd.edu GPU)
+python run_rnng_datahub.py --data_dir <path/to/data> --seeds 1 2 3
+
+# LSTM-vs-RNNG comparison figures (reads both eval CSVs)
+python src/combined_plots.py
 ```
 
 Scripts must be run from the repo root (both shell scripts `cd` there automatically). `src/` modules import each other without a package prefix, so run python from the root as shown above.
@@ -49,9 +55,54 @@ Data files are git-ignored; share via Drive/Dropbox. Checkpoints are committed.
 
 ## RNNG (paper phase)
 
-RNNG is being added for the 6/11 paper, not the talk. See `rnng/RNNG_SPIKE_FINDINGS.md` for full setup. Key points:
+RNNG is being added for the 6/11 paper, not the talk. The full train+eval pipeline lives in
+`run_rnng_datahub.py` (one script: parse → verb-swap per condition → `preprocess.py` → train →
+`beam_search.py` surprisal eval → append to `results/rnng_eval_results.csv`). See
+`rnng/RNNG_SPIKE_FINDINGS.md` for setup. Status (2026-06-08): **seed-1 results landed for all 5
+conditions**; seeds 2–3 pending. Key points:
 - Codebase: `aistairc/rnng-pytorch`. Apply `rnng/rnng_pytorch_fixes.patch` after cloning.
 - Parse the **clean** corpus once with benepar (`spacy en_core_web_md` + `benepar_en3`); the tree structure is identical across all 5 noise conditions (only the verb terminal changes).
 - On Mac: pass `--jobs 1` to `preprocess.py` (macOS lacks `os.sched_getaffinity`).
 - Fallback if RNNG tree quality is too noisy: ON-LSTM (syntactic bias, no gold trees required).
 - Surprisal eval: `beam_search.py --lm_output_file surprisals.txt` for per-word surprisals.
+
+### Comparability: matched-subset workflow (do not skip)
+
+`run_rnng_datahub.py` scores via `beam_search.py`, which only covers ~13% of the held-out set
+(long sentences pruned) and skips the in-vocab verb filter — so RNNG's default `acc_all`
+(**2,654 pairs**) is **not** on the same set as the LSTM's (**19,819**). To compare fairly, restrict
+both models to the one set both can score. Every pair now carries a stable `idx` (source row),
+and the pipeline emits the artifacts needed to align them:
+
+```bash
+# 1) RNNG run writes per-(cond,seed): results/rnng_covered_idx_*.json and
+#    results/rnng_pairs_*.csv (per-pair idx/has_attractor/correct/surprisals)
+python run_rnng_datahub.py --data_dir <data> --seeds 1 2 3
+
+# 2) Build matched subset = (∩ RNNG covered) ∩ (LSTM in-vocab); recompute RNNG metrics on it
+python src/match_subset.py
+#    -> results/matched_idx.json, results/rnng_eval_results_matched.csv
+
+# 3) Re-score each LSTM checkpoint on the SAME subset (cheap, no retraining)
+python src/evaluate.py --checkpoint checkpoints/lstm_<cond>_seed<N>.pt --condition <cond> \
+    --seed <N> --restrict_indices results/matched_idx.json \
+    --results_csv results/eval_results_matched.csv
+#    (src/match_subset.py prints a ready-to-run loop over all checkpoints)
+
+# 4) Plot the matched comparison
+python src/combined_plots.py --lstm_csv results/eval_results_matched.csv \
+    --rnng_csv results/rnng_eval_results_matched.csv
+```
+
+Until step 4, the within-model attractor gap (a rate, not a count) is the safer cross-model
+contrast. `src/combined_plots.py` also deduplicates repeated rows.
+
+### RNNG sanity outputs
+
+`run_rnng_datahub.py` also writes: `results/rnng_train_ppl.csv` (validation PPL/WordPPL per
+validation event, scraped from the training log — check 8 epochs actually converged) and
+`results/rnng_parse_quality.json` + `results/rnng_tree_sample.txt` (benepar parse failure rate +
+a 40-tree hand-check sample for the §7 tree-quality validity risk on lowercased/anonymized tokens).
+The full training output is teed to `<work_dir>/logs/train_<cond>_seed<N>.log` — that log is the
+authoritative record; the PPL CSV is a best-effort parse of rnng-pytorch's `PPL: … WordPPL: …`
+validation lines.
