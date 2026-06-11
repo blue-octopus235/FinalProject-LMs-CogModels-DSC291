@@ -54,6 +54,7 @@ def build_minimal_pairs(original_path, test_indices, vocab=None):
             except ValueError:
                 n_diff = 0
             pairs.append({
+                "idx": i,  # stable source-row id; lets LSTM/RNNG align on the SAME pairs
                 "prefix": toks[:vidx],
                 "correct": correct,
                 "incorrect": incorrect,

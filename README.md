@@ -62,9 +62,20 @@ parse trees and trains slower than the LSTM, so it is **paper-phase**: the talk 
 LSTM runs; RNNG-vs-LSTM is the headline comparison for the 6/11 paper. Fallback if RNNG won't
 train in time: ON-LSTM (syntactic bias, no gold trees).
 
+The full RNNG train+eval pipeline is `run_rnng_datahub.py` (parse once → swap verb terminal per
+condition → `preprocess.py` → train → `beam_search.py` surprisal eval → `results/rnng_eval_results.csv`),
+run on datahub.ucsd.edu. `src/combined_plots.py` produces the LSTM-vs-RNNG comparison figures
+(`results/combined_*.png`). **Status:** seed-1 results are in for all 5 conditions; seeds 2–3 pending.
+
+> **Caveat:** RNNG is currently scored on a smaller pair subset (2,654 vs. the LSTM's 19,819)
+> because it skips the in-vocab filter and keeps only beam-scorable pairs — so `acc_all` is not yet
+> apples-to-apples. Compare rate metrics (attractor gap) until the subsets are matched.
+
 ## Layout
 ```
-src/   data_utils.py  lstm_lm.py  verb_flip.py  minimal_pairs.py  train.py  evaluate.py  plots.py
-notebooks/  colab_runner.ipynb  rnng_spike.ipynb
+src/   data_utils.py  lstm_lm.py  verb_flip.py  minimal_pairs.py  train.py  evaluate.py
+       plots.py  trajectory.py  combined_plots.py
+run_rnng_datahub.py   (RNNG train+eval pipeline)
+notebooks/  colab_runner.ipynb  rnng_spike.ipynb  rnng_colab.ipynb
 data/  (git-ignored TSVs)   checkpoints/  results/
 ```

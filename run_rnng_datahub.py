@@ -15,7 +15,7 @@ Usage:
     #   --epochs 8                 (default)
 """
 
-import argparse, csv, json, math, os, re, subprocess, sys
+import argparse, csv, json, math, os, random, re, subprocess, sys
 from pathlib import Path
 
 # ── Repo root (script lives at repo root) ─────────────────────────────────────
@@ -40,20 +40,72 @@ def banner(msg):
     print(f'\n{"="*60}\n  {msg}\n{"="*60}', flush=True)
 
 
-def run_streaming(cmd, cwd, label):
-    """Run a subprocess, stream output live, raise on non-zero exit."""
+_NOISE_PATTERNS = (
+    'external/local_xla',   # TF CUDA plugin registration errors
+    'tensorflow',           # TF oneDNN suggestion
+    'numexpr.utils:INFO',   # NumExpr thread-count message
+    'SyntaxWarning',        # rnng-pytorch utils.py literal comparison
+    'while stack[-1]',      # SyntaxWarning continuation line
+)
+
+
+def _is_parse_tree(line: str) -> bool:
+    # beam_search.py prints every inferred tree to stdout. Trees use the
+    # placeholder token format "(X word)" throughout. When piped (non-TTY),
+    # tqdm doesn't emit a newline before the print(), so the tree can be
+    # appended to a progress-bar line — check anywhere in the line.
+    return '(X ' in line
+
+_SUPPRESS_ENV = {
+    **os.environ,
+    'TF_CPP_MIN_LOG_LEVEL': '3',
+    'NUMEXPR_MAX_THREADS': '8',
+    'PYTHONWARNINGS': 'ignore::SyntaxWarning',
+}
+
+
+def run_streaming(cmd, cwd, label, log_path=None):
+    """Run a subprocess, stream output live, raise on non-zero exit.
+
+    If log_path is given, every kept (non-suppressed) line is also written there
+    so the full run (e.g. per-epoch val PPL) survives for later inspection."""
     print(f'[{label}] Running: {" ".join(str(c) for c in cmd)}', flush=True)
     tail = []
+    logf = None
+    if log_path is not None:
+        Path(log_path).parent.mkdir(parents=True, exist_ok=True)
+        logf = open(log_path, 'w')
+    in_model_block = False
     proc = subprocess.Popen(
         [str(c) for c in cmd], cwd=str(cwd),
         stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True,
+        env=_SUPPRESS_ENV,
     )
     for line in proc.stdout:
+        # Suppress the model-architecture block. It spans two logger.info calls:
+        #   "model architecture"         <- trigger line
+        #   model (FixedStackRNNG(...))  <- second call, starts with timestamp prefix
+        # followed by indented module lines and ended by a bare ')' at column 0.
+        if '__main__:INFO: model architecture' in line:
+            in_model_block = True
+            continue
+        if in_model_block:
+            # rstrip() keeps leading spaces, so '  )' != ')'; only the unindented
+            # outer closing paren signals the end of the repr.
+            if line.rstrip() == ')':
+                in_model_block = False
+            continue  # skip every line inside the block, including the final ')'
+        if any(p in line for p in _NOISE_PATTERNS) or _is_parse_tree(line):
+            continue
         print(line, end='', flush=True)
+        if logf is not None:
+            logf.write(line)
         tail.append(line)
         if len(tail) > 120:
             tail.pop(0)
     proc.wait()
+    if logf is not None:
+        logf.close()
     if proc.returncode != 0:
         print('\n--- last output ---\n' + ''.join(tail))
         raise RuntimeError(f'{label} failed (exit {proc.returncode})')
@@ -109,6 +161,29 @@ def setup_rnng(rnng_dir: Path):
 
 # ── Step 2: Parse clean corpus with benepar (one-time) ───────────────────────
 
+def write_parse_quality_and_sample(parse_meta, clean_trees, row_sent, quality):
+    """Write results/rnng_parse_quality.json and a 40-tree hand-check sample.
+    row_sent maps row_idx -> original sentence (may be partial: only sampled rows
+    are needed). Safe to call on both fresh and cached parse runs."""
+    quality_f = REPO_DIR / 'results' / 'rnng_parse_quality.json'
+    sample_f  = REPO_DIR / 'results' / 'rnng_tree_sample.txt'
+    quality_f.parent.mkdir(parents=True, exist_ok=True)
+    quality_f.write_text(json.dumps(quality, indent=2))
+
+    rng = random.Random(1234)
+    sample = rng.sample(parse_meta, min(40, len(parse_meta)))
+    with open(sample_f, 'w') as f:
+        f.write(f'# parse quality: {quality}\n')
+        f.write('# random sample of parsed trees — hand-check that brackets '
+                'reflect real constituency on these lowercased/anon tokens\n\n')
+        for m in sample:
+            f.write(f"row {m['row_idx']}  verb='{m['verb_form']}' "
+                    f"(idx {m['verb_idx']}, pos {m['verb_pos']})\n")
+            f.write(f"  sent: {row_sent.get(m['row_idx'], '<n/a>')}\n")
+            f.write(f"  tree: {clean_trees[m['tree_line']]}\n\n")
+    print(f'Parse quality -> {quality_f}; tree sample ({len(sample)}) -> {sample_f}')
+
+
 def parse_corpus(data_dir: Path, work_dir: Path, max_sentences: int, parse_batch: int):
     banner('Step 2 — Parse clean corpus with benepar (one-time)')
 
@@ -122,6 +197,26 @@ def parse_corpus(data_dir: Path, work_dir: Path, max_sentences: int, parse_batch
         parse_meta  = json.loads(parse_meta_f.read_text())
         clean_trees = clean_trees_f.read_text().splitlines()
         print(f'Loaded {len(clean_trees)} trees.')
+        # Regenerate the tree-quality sample if missing (e.g. parsing predates
+        # this feature). Read back only the sentences for the sampled rows.
+        if not (REPO_DIR / 'results' / 'rnng_tree_sample.txt').exists():
+            sys.path.insert(0, str(REPO_DIR / 'src'))
+            from data_utils import ORIGINAL_FILE
+            rng = random.Random(1234)
+            sample = rng.sample(parse_meta, min(40, len(parse_meta)))
+            want = {m['row_idx'] for m in sample}
+            row_sent = {}
+            with open(data_dir / ORIGINAL_FILE) as f:
+                reader = csv.DictReader(f, delimiter='\t')
+                for i, row in enumerate(reader):
+                    if i in want:
+                        row_sent[i] = (row.get('orig_sentence') or '').strip()
+                        if len(row_sent) == len(want):
+                            break
+            quality = {'total_sentences': None, 'parsed': len(clean_trees),
+                       'failures': None, 'fail_rate': None,
+                       'note': 'cached parse; failures unknown — see prior parse log'}
+            write_parse_quality_and_sample(parse_meta, clean_trees, row_sent, quality)
         return parse_dir, parse_meta, clean_trees
 
     # Import data_utils from repo src/
@@ -204,6 +299,18 @@ def parse_corpus(data_dir: Path, work_dir: Path, max_sentences: int, parse_batch
     print(f'Parsed {len(clean_trees)}/{len(train_rows)}, {fail_count} failures.')
     clean_trees_f.write_text('\n'.join(clean_trees) + '\n')
     parse_meta_f.write_text(json.dumps(parse_meta))
+
+    # Tree-quality sanity check (§7 validity risk: benepar on lowercased/anonymized
+    # tokens). Persist parse stats + dump a random sample for hand inspection.
+    total = len(train_rows)
+    quality = {
+        'total_sentences': total,
+        'parsed': len(clean_trees),
+        'failures': fail_count,
+        'fail_rate': (fail_count / total) if total else None,
+    }
+    row_sent = {r['row_idx']: r['sent'] for r in train_rows}
+    write_parse_quality_and_sample(parse_meta, clean_trees, row_sent, quality)
     print(f'Saved to {parse_dir}.')
     return parse_dir, parse_meta, clean_trees
 
@@ -284,10 +391,65 @@ def preprocess_condition(cond, data_dir, parse_dir, parse_meta, clean_trees, rnn
 
 # ── Step 4: Train ─────────────────────────────────────────────────────────────
 
+def scrape_val_ppl(log_path, cond, seed):
+    """Pull each validation-PPL event from a training log into
+    results/rnng_train_ppl.csv (convergence sanity check).
+
+    rnng-pytorch's do_valid() logs 'Checking validation perplexity...' then
+    eval_action_ppl() logs 'PPL: x, Loss: x, ActionPPL: x, WordPPL: x'. We grab
+    the PPL/WordPPL on the line right after the 'Checking validation' marker. The
+    teed log_path is the source of truth if the format ever drifts."""
+    if not Path(log_path).exists():
+        return
+    val_marker = re.compile(r'Checking validation perplexity', re.IGNORECASE)
+    ppl_pat = re.compile(
+        r'\bPPL:\s*([0-9.]+).*?WordPPL:\s*([0-9.]+)', re.IGNORECASE)
+    epoch_pat = re.compile(r'epoch\D+([0-9]+)', re.IGNORECASE)
+
+    rows = []
+    cur_epoch = ''
+    expect_val = False
+    for line in Path(log_path).read_text().splitlines():
+        em = epoch_pat.search(line)
+        if em:
+            cur_epoch = em.group(1)
+        if val_marker.search(line):
+            expect_val = True
+            continue
+        if expect_val:
+            m = ppl_pat.search(line)
+            if m:
+                rows.append({'condition': cond, 'seed': seed, 'epoch': cur_epoch,
+                             'val_ppl': m.group(1), 'val_word_ppl': m.group(2),
+                             'line': line.strip()[:200]})
+                expect_val = False
+    if not rows:
+        print(f'[{cond} seed{seed}] No val-PPL lines matched; raw log at {log_path}')
+        return
+    ppl_csv = REPO_DIR / 'results' / 'rnng_train_ppl.csv'
+    ppl_csv.parent.mkdir(parents=True, exist_ok=True)
+    fields = ['condition', 'seed', 'epoch', 'val_ppl', 'val_word_ppl', 'line']
+    existing = []
+    if ppl_csv.exists():
+        with open(ppl_csv, newline='') as f:
+            existing = [r for r in csv.DictReader(f)
+                        if not (r.get('condition') == cond
+                                and str(r.get('seed')) == str(seed))]
+    with open(ppl_csv, 'w', newline='') as f:
+        w = csv.DictWriter(f, fieldnames=fields)
+        w.writeheader()
+        for r in existing:
+            w.writerow({k: r.get(k) for k in fields})
+        w.writerows(rows)
+    print(f'[{cond} seed{seed}] Logged {len(rows)} val-PPL event(s) '
+          f'(final WordPPL={rows[-1]["val_word_ppl"]}) -> {ppl_csv}')
+
+
 def train_condition_seed(cond, seed, parse_dir, work_dir, rnng_dir, epochs):
     banner(f'Step 4 — Train: {cond} seed{seed}')
     ckpt = work_dir / 'checkpoints' / f'rnng_{cond}_seed{seed}.pt'
     (work_dir / 'checkpoints').mkdir(parents=True, exist_ok=True)
+    log_path = work_dir / 'logs' / f'train_{cond}_seed{seed}.log'
 
     if ckpt.exists():
         print(f'[{cond} seed{seed}] Checkpoint exists — skipping.')
@@ -314,7 +476,9 @@ def train_condition_seed(cond, seed, parse_dir, work_dir, rnng_dir, epochs):
          '--seed',             str(seed)],
         cwd=rnng_dir,
         label=f'train [{cond} seed{seed}]',
+        log_path=log_path,
     )
+    scrape_val_ppl(log_path, cond, seed)
     print(f'[{cond} seed{seed}] Done — saved to {ckpt}')
     return ckpt
 
@@ -418,6 +582,27 @@ def eval_condition_seed(cond, seed, ckpt, all_pairs, work_dir, rnng_dir,
             surp_i.append(i_row[vpos])
 
     print(f'[{cond} seed{seed}] Valid pairs: {len(valid_pairs)}/{len(all_pairs)}')
+
+    # Export the source-row indices beam_search could actually score, so the LSTM
+    # can be re-evaluated on the SAME pairs (apples-to-apples acc_all). Beam
+    # coverage is ~13% and content-dependent; the matched subset is the union of
+    # what every RNNG run covers, intersected with the LSTM in-vocab set.
+    covered_idx = sorted(p['idx'] for p in valid_pairs)
+    idx_file = REPO_DIR / 'results' / f'rnng_covered_idx_{cond}_seed{seed}.json'
+    idx_file.parent.mkdir(parents=True, exist_ok=True)
+    idx_file.write_text(json.dumps(covered_idx))
+    print(f'[{cond} seed{seed}] Wrote {len(covered_idx)} covered indices -> {idx_file}')
+
+    # Per-pair record so RNNG metrics can be recomputed on the matched subset
+    # (src/match_subset.py). One row per scored pair.
+    pairs_file = REPO_DIR / 'results' / f'rnng_pairs_{cond}_seed{seed}.csv'
+    with open(pairs_file, 'w', newline='') as f:
+        w = csv.writer(f)
+        w.writerow(['idx', 'has_attractor', 'correct',
+                    'surp_correct', 'surp_incorrect'])
+        for p, sc, si in zip(valid_pairs, surp_c, surp_i):
+            w.writerow([p['idx'], int(p['has_attractor']), int(sc < si), sc, si])
+
     res = summarize(valid_pairs, surp_c, surp_i)
     res.update({'model': 'rnng', 'condition': cond, 'rate': RATES[cond],
                 'seed': seed, 'checkpoint': ckpt.name})
@@ -427,14 +612,24 @@ def eval_condition_seed(cond, seed, ckpt, all_pairs, work_dir, rnng_dir,
             'mean_surprisal_correct_bits',
             'n_all', 'n_attractor', 'n_no_attractor', 'checkpoint']
 
-    with open(results_csv, 'a', newline='') as f:
+    # Upsert by (model, condition, seed): re-runs (train/beam_search are cached)
+    # would otherwise append a duplicate row every time. Rewrite the file with the
+    # existing rows for OTHER keys plus this fresh row.
+    existing = []
+    if results_csv.exists():
+        with open(results_csv, newline='') as f:
+            existing = [r for r in csv.DictReader(f)
+                        if (r.get('model'), r.get('condition'), str(r.get('seed')))
+                        != ('rnng', cond, str(seed))]
+    with open(results_csv, 'w', newline='') as f:
         w = csv.DictWriter(f, fieldnames=COLS)
-        if write_header:
-            w.writeheader()
+        w.writeheader()
+        for r in existing:
+            w.writerow({k: r.get(k) for k in COLS})
         w.writerow({k: res.get(k) for k in COLS})
 
     print(f'  acc_all={res["acc_all"]:.3f}  attractor_gap={res["attractor_gap"]:.3f}')
-    return False  # header written
+    return False  # header always written now
 
 
 # ── Main ──────────────────────────────────────────────────────────────────────

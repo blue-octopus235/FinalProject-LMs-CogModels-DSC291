@@ -1,19 +1,46 @@
 \section{Discussion}
 
-% OWNER: Sanjana Garimella (discussion per proposal)
+\begin{frame}{When does the rule break?}
+  \begin{itemize}
+    \item \textbf{It's a threshold, not a gradual decline.} The model absorbs noise
+      fine up to $10\%$, then snaps at $50\%$. Similar to how a child's grammar
+      survives occasional speech errors around them.
+    \item \textbf{The attractor gap catches it early.} It climbs from $0.07$ to $0.20$
+      even while overall accuracy still looks fine.
+    \item \textbf{Low noise delays learning, high noise prevents it.} At low noise
+      the model still gets there eventually (the curves converge). At $50\%$ it
+      plateaus and never learns the rule.
+  \end{itemize}
+\end{frame}
 
 \begin{frame}{Does structure buy robustness?}
-  % TODO (Sanjana): answer the RNNG-vs-LSTM question; tie to the
-  % poverty-of-the-stimulus framing.
   \begin{itemize}
-    \item TODO
+    \item The big question: does a model with built-in syntax (RNNG) hold up
+      better than a plain LSTM? RNNG training is still in progress.
+    \item \textbf{What we know from the LSTM:} it picks up the hierarchical rule
+      from clean data, but drifts toward the nearest-noun shortcut as noise grows.
+    \item If RNNG keeps the hierarchical rule where the LSTM gave up, that
+      points to structure helping with robustness.
+    \item If both models break at the same point, then maybe it's really about
+      the quality of the input, not the architecture. That ties back to the
+      poverty-of-the-stimulus question.
   \end{itemize}
 \end{frame}
 
 \begin{frame}{Takeaways and future work}
-  % TODO (Sanjana): headline findings; limitations (synthetic noise, templatic
-  % corpus, RNNG tree quality); next steps (naturalistic noise, scale, ON-LSTM).
+  \textbf{What we found}
   \begin{itemize}
-    \item TODO
+    \item LSTMs can handle moderate SVA noise, but there's a sharp breaking point.
+    \item Noise doesn't just make the model worse overall. It changes \emph{which rule}
+      the model learns, pushing it toward the linear nearest-noun shortcut.
+    \item At $50\%$ noise, more training actually makes things worse, not better.
+  \end{itemize}
+  \vspace{0.3cm}
+  \textbf{Limitations and next steps}
+  \begin{itemize}
+    \item Our noise is synthetic and uniform; the corpus is templatic; trajectories
+      are single-seed.
+    \item Finish the RNNG comparison; try ON-LSTM as a middle ground.
+    \item Future: more naturalistic noise patterns and larger-scale training.
   \end{itemize}
 \end{frame}

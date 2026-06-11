@@ -1,33 +1,73 @@
 \section{Results}
 
-% OWNER: Sanjana Garimella (results per proposal)
-% Figures reference live files in ../results/ via \graphicspath in main.tex.
-% Uncomment each frame's \includegraphics once you're ready to show it.
-
-\begin{frame}{Accuracy degrades with noise}
-  % TODO (Sanjana): describe the trend; show acc_vs_noise.png.
-  \centering
-  % \includegraphics[height=0.7\textheight]{acc_vs_noise.png}
-  TODO: \texttt{acc\_vs\_noise.png}
+\begin{frame}{Accuracy holds up until 50\% noise}
+  \begin{columns}[T]
+    \begin{column}{0.55\textwidth}
+      \centering
+      \includegraphics[width=\linewidth,height=0.65\textheight,keepaspectratio]{acc_vs_noise.png}
+    \end{column}
+    \begin{column}{0.45\textwidth}
+      \small
+      \begin{itemize}
+        \item Stays flat up to $10\%$ noise ($0.961 \to 0.934$)
+        \item Drops sharply at $50\%$, down to $0.708$
+        \item The model can handle about 1 bad verb in 10 before it breaks
+        \item Not a gradual decline, more like a threshold
+      \end{itemize}
+    \end{column}
+  \end{columns}
 \end{frame}
 
-\begin{frame}{The attractor gap widens with noise}
-  % TODO (Sanjana): gap grows -> models lean on the linear shortcut.
-  \centering
-  % \includegraphics[height=0.7\textheight]{attractor_gap.png}
-  TODO: \texttt{attractor\_gap.png}
+\begin{frame}{The attractor gap grows with noise}
+  \begin{columns}[T]
+    \begin{column}{0.55\textwidth}
+      \centering
+      \includegraphics[width=\linewidth,height=0.65\textheight,keepaspectratio]{attractor_gap.png}
+    \end{column}
+    \begin{column}{0.45\textwidth}
+      \small
+      \begin{itemize}
+        \item Gap $=$ acc(no attractor) $-$ acc(attractor)
+        \item Goes from $0.073$ to $0.198$ as noise increases
+        \item Tells us how much the model leans on the nearest-noun shortcut
+        \item More noise means more reliance on the linear rule
+      \end{itemize}
+    \end{column}
+  \end{columns}
 \end{frame}
 
-\begin{frame}{Accuracy by attractor presence}
-  % TODO (Sanjana): split attractor vs. no-attractor items.
-  \centering
-  % \includegraphics[height=0.7\textheight]{acc_by_attractor.png}
-  TODO: \texttt{acc\_by\_attractor.png}
+\begin{frame}{Attractor items are where it falls apart}
+  \begin{columns}[T]
+    \begin{column}{0.55\textwidth}
+      \centering
+      \includegraphics[width=\linewidth,height=0.65\textheight,keepaspectratio]{acc_by_attractor.png}
+    \end{column}
+    \begin{column}{0.45\textwidth}
+      \small
+      \begin{itemize}
+        \item Without attractors, accuracy stays above $0.94$ until $50\%$
+        \item With attractors, it drops to near chance ($0.525$)
+        \item Attractor items are the only cases where the two rules disagree
+        \item So that's exactly where the model struggles first
+      \end{itemize}
+    \end{column}
+  \end{columns}
 \end{frame}
 
-\begin{frame}{Learning trajectories: delay vs.\ prevention}
-  % TODO (Sanjana): low noise climbs to ~0.96 (delay); 50% plateaus (prevention).
-  \centering
-  % \includegraphics[height=0.7\textheight]{acc_trajectory.png}
-  TODO: \texttt{acc\_trajectory.png}
+\begin{frame}{Learning over time: delay vs.\ prevention}
+  \begin{columns}[T]
+    \begin{column}{0.55\textwidth}
+      \centering
+      \includegraphics[width=\linewidth,height=0.65\textheight,keepaspectratio]{acc_trajectory.png}
+    \end{column}
+    \begin{column}{0.45\textwidth}
+      \small
+      \begin{itemize}
+        \item Up to $10\%$ noise: reaches the same accuracy, just takes longer (\textbf{delay})
+        \item At $50\%$: plateaus around $0.69$ and never catches up (\textbf{prevention})
+        \item Clean model: gap shrinks over training ($0.15 \to 0.05$)
+        \item $50\%$ model: gap actually \emph{grows} ($0.14 \to 0.20$)
+      \end{itemize}
+    \end{column}
+  \end{columns}
 \end{frame}

@@ -7,6 +7,23 @@
 \setbeamertemplate{navigation symbols}{}   % drop nav clutter
 \setbeamertemplate{caption}[numbered]
 
+% Footer: names on every slide
+\setbeamertemplate{footline}{%
+  \leavevmode%
+  \hbox{%
+    \begin{beamercolorbox}[wd=.33\paperwidth,ht=2.5ex,dp=1ex,center]{author in head/foot}%
+      \usebeamerfont{author in head/foot}Jackson Wilke, Kelly Fu, Sanjana Garimella%
+    \end{beamercolorbox}%
+    \begin{beamercolorbox}[wd=.44\paperwidth,ht=2.5ex,dp=1ex,center]{title in head/foot}%
+      \usebeamerfont{title in head/foot}DSC 291 --- Language Models as Cognitive Models%
+    \end{beamercolorbox}%
+    \begin{beamercolorbox}[wd=.23\paperwidth,ht=2.5ex,dp=1ex,right]{date in head/foot}%
+      \usebeamerfont{date in head/foot}\insertframenumber{} / \inserttotalframenumber\hspace*{2ex}%
+    \end{beamercolorbox}%
+  }%
+  \vskip0pt%
+}
+
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
 \usepackage{graphicx}

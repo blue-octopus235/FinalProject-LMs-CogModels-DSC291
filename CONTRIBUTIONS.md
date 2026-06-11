@@ -53,6 +53,19 @@ short.
   frames pre-wired to `results/` figures via `\graphicspath`, plus a `latexmk`
   `Makefile` and `presentation/.gitignore`. Verified it compiles. (`presentation/`)
 
+- **2026-06-08** — Built the end-to-end RNNG train+eval pipeline for datahub.ucsd.edu
+  (`run_rnng_datahub.py`): parse the clean corpus once, swap the verb terminal per
+  noise condition, `preprocess.py`, train per condition/seed, then score the shared
+  minimal pairs via `beam_search.py` surprisals into `results/rnng_eval_results.csv`.
+  Added inline rnng-pytorch fixes (PyTorch-2.6 `weights_only`, NumPy-2.x) and live
+  output filtering. Ran **seed 1 across all 5 conditions** and wrote
+  `src/combined_plots.py` for the LSTM-vs-RNNG comparison figures
+  (`results/combined_*.png`). Headline: the RNNG attractor gap stays flat/low as noise
+  rises (0.05→0.11) where the LSTM's grows (0.07→0.20) — the H3 "structure buys
+  robustness" signal, pending seeds 2–3. Flagged the test-set comparability caveat
+  (RNNG scored on 2,654 pairs vs. the LSTM's 19,819) in the docs. (`run_rnng_datahub.py`,
+  `src/combined_plots.py`, `results/`)
+
 - **2026-06-01** — Wrote the methods slides: filled the talk's methods section,
   expanding the stubs into five focused frames (noise injection + five corrupted
   corpora, leak-free 20k held-out protocol, the minimal-pair test, LSTM-vs-RNNG
@@ -95,8 +108,13 @@ short.
   but doesn't stop acquisition), while the 50% noise condition plateaus around
   0.69 and never gets there — that's prevention. Added trajectory plots to
   `src/plots.py` (`acc_trajectory.png`, `gap_trajectory.png`).
-
----
+- **2026-06-02** — Wrote the Results and Discussion sections (report + slides)
+  from the final numbers: the threshold-like accuracy drop, the widening
+  attractor gap, and the delay-vs-prevention trajectory story. Expanded the
+  `literature/` review with four papers and summaries (Marvin & Linzen 2018,
+  Kuncoro 2018, Lakretz 2019, Evanson 2023) and added the new references to
+  `report/refs.bib`. (`report/sections/sec5_results.tex`, `sec6_discussion.tex`,
+  `presentation/sections/sec4_results.tex`, `sec5_discussion.tex`, `literature/`)
 ### Areas of ownership (from proposal)
 - Data & training infra: Jackson (compute/coordination), Kelly (noise pipeline),
   Sanjana (training scripts/checkpointing)

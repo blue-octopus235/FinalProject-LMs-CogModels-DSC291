@@ -48,7 +48,28 @@ Low-to-medium noise **delays** acquisition; 50% noise **prevents** it. The attra
 gap for the high condition also grows over training (0.14→0.20), meaning more training
 makes the model *more* reliant on the linear nearest-noun rule, not less.
 
-## Next (paper phase, 6/11)
+## RNNG (paper phase) — seed 1 so far
 
-Add the RNNG arm (spike is GO — see `rnng/`) and compare its noise robustness and
-attractor gap against the LSTM at matched scale.
+RNNG train+eval via `run_rnng_datahub.py` (150k sentences, 8 epochs). Raw rows:
+`rnng_eval_results.csv`. Comparison figures: `combined_acc_vs_noise.png`,
+`combined_attractor_gap.png`, `combined_acc_by_attractor.png` (from `src/combined_plots.py`).
+**Seed 1 only; seeds 2–3 pending** (no error bars yet).
+
+| condition | rate | acc_all | acc_no_attr | acc_attr | gap |
+|---|---|---|---|---|---|
+| baseline   | 0.0   | 0.980 | 0.984 | 0.934 | 0.050 |
+| low        | 0.004 | 0.979 | 0.982 | 0.953 | 0.029 |
+| medium_low | 0.02  | 0.976 | 0.979 | 0.948 | 0.031 |
+| medium_high| 0.10  | 0.976 | 0.980 | 0.934 | 0.046 |
+| high       | 0.50  | 0.742 | 0.751 | 0.637 | 0.114 |
+
+Read: the RNNG attractor gap stays **flat and low** as noise rises (0.05 → 0.11) where the LSTM's
+**grows** (0.07 → 0.20), and even at 50% noise the RNNG gap is below the LSTM's clean-data gap.
+This is the H3 "structure buys robustness" signal — pending seeds 2–3 and the caveat below.
+
+> **Comparability caveat.** RNNG is scored on **2,654 pairs (212 attractors)**, the LSTM on
+> **19,819 (1,528)** — `run_rnng_datahub.py` skips the in-vocab filter and keeps only beam-scorable
+> pairs, so the two test sets differ. `acc_all` is **not** directly comparable yet; the gap (a
+> within-model rate) is the safer cross-model contrast. To make `acc_all` comparable, recover the
+> RNNG coverage or re-score the LSTM on the same 2,654-pair subset. Also still open: RNNG
+> convergence check (val PPL at 8 epochs) and a benepar tree-quality spot-check.

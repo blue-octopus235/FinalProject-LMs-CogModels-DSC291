@@ -1,5 +1,15 @@
-\section{Introduction}
-\label{sec:introduction}
+\section{Motivation}
+\label{sec:motivation}
+
+The core motivation of this study is to use controlled neural network experiments to investigate a long-standing debate in linguistics and cognitive science: how grammatical knowledge can be acquired from imperfect linguistic input.
+
+According to Chomsky's poverty-of-the-stimulus argument, children are exposed to noisy and incomplete language containing speech errors, disfluencies, and grammatical violations, yet still acquire complex hierarchical grammatical systems. This observation has often been taken as evidence that language acquisition depends on innate linguistic structure rather than solely on statistical learning from input. However, because it is neither ethically nor practically possible to systematically manipulate the linguistic environments of human children, the extent to which grammar acquisition depends on innate structure remains difficult to evaluate through direct experimentation.
+
+Recent advances in computational linguistics provide a new opportunity to address this problem. Neural language models offer a uniquely controllable experimental platform in which both the learner and the learning environment can be manipulated. The inductive biases of different architectures can be interpreted as different forms of internal structure, while the quality of linguistic input can be controlled through the construction of training corpora. By systematically introducing grammatical corruption into the training data, we can simulate increasingly degraded linguistic environments and observe how different learners respond.
+
+Beyond the broader question of whether grammatical knowledge can be acquired from noisy input, this study also seeks to understand how noise affects the internal generalization strategies of language models. Natural language is fundamentally hierarchical, yet standard sequence models lack an explicit inductive bias for hierarchical structure. As grammatical evidence becomes increasingly unreliable, models may continue to rely on hierarchical syntactic representations, or they may gradually abandon them in favor of simpler linear heuristics based on surface word order. Tracking this transition provides a window into how grammatical noise reshapes the internal representations learned by neural language models.
+
+Taken together, these considerations motivate three central questions. First, can language models acquire grammatical rules from systematically corrupted input? Second, does increasing grammatical noise cause models to shift from hierarchical generalizations toward simpler linear strategies? Third, does explicit structural inductive bias improve robustness to noisy linguistic environments? By answering these questions, we aim not only to characterize the robustness of neural language models, but also to contribute evidence to broader debates concerning grammar acquisition, inductive bias, and the learnability of hierarchical structure from imperfect input.
 
 % OWNER: Kelly Fu (intro/conclusion per proposal)
 % TODO (Kelly): The phenomenon (SVA; hierarchical rule vs. linear most-recent-noun
