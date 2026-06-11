@@ -2,9 +2,54 @@
 \label{sec:experiments}
 
 % OWNER: Jackson Wilke (methods/setup per proposal)
-% TODO (Jackson): Training (epochs, optimizer, lr, batch size, max_sentences; checkpoint
-%       naming; shared vocab).
-% TODO: Conditions (5 noise rates x 2 models x 3 seeds = total runs).
-% TODO: Trajectory analysis (per-checkpoint accuracy/gap), if reported.
-% TODO: Hypotheses (H1 accuracy drops; H2 gap widens; H3 RNNG gap widens
-%       more slowly).
+
+\subsection{Training}
+\label{sec:training}
+Both architectures are trained from scratch on each noise condition. The
+vocabulary (10K types) is built once from the clean corpus and shared across
+every condition and both models, so vocabulary never confounds the comparison.
+
+The LSTM uses embedding and hidden dimension 256, two layers, dropout 0.2, and
+tied input/output embeddings, optimized with Adam (learning rate $10^{-3}$,
+batch size 64, gradient clipping at 1.0) for 5 epochs over 150K sentences per
+condition. The RNNG (top-down, fixed-stack) uses word and hidden dimension 256,
+two layers, dropout 0.3, Adam (learning rate $10^{-3}$, batch size 128 with a
+15K-token cap), for 8 epochs over the same 150K sentences; per-verb surprisals
+are obtained by word-synchronous beam search (beam size 100, word-beam 20).
+Checkpoints are named by condition and seed. A full hyperparameter table is given
+in Appendix~\ref{app:repro}.
+
+\subsection{Conditions and Runs}
+\label{sec:runs}
+The grid is 5 noise rates $\times$ 2 architectures $\times$ 3 seeds. The LSTM
+sweep was run on two machines (local Apple MPS and a Colab T4), giving six runs
+per condition; the RNNG sweep contributes three seeds per condition. Unless
+noted, reported values aggregate over seeds, with $\pm$ denoting standard
+deviation across runs.
+
+\subsection{Trajectory Analysis}
+\label{sec:trajectory}
+To ask \emph{when}---not just whether---a rule is acquired, we additionally
+checkpoint the LSTM every 500 optimizer steps and re-score the full minimal-pair
+set at each checkpoint, yielding accuracy and attractor-gap trajectories over
+training (Section~\ref{sec:results}).
+
+\subsection{Hypotheses}
+\label{sec:hypotheses}
+We test three preregistered hypotheses:
+\begin{itemize}
+  \item \textbf{H1.} Overall minimal-pair accuracy decreases as the training
+    noise rate increases.
+  \item \textbf{H2.} The attractor gap $\Delta$ widens with noise---models lean
+    increasingly on the linear nearest-noun cue.
+  \item \textbf{H3.} The RNNG's attractor gap widens \emph{more slowly} than the
+    LSTM's; an explicit structural bias buys robustness to noisy supervision.
+\end{itemize}
+H3 is evaluated on the matched subset (Section~\ref{sec:metrics}). We summarize
+the per-condition gap difference $\Delta_{\text{LSTM}} - \Delta_{\text{RNNG}}$
+with a pair-level bootstrap (resampling the matched pairs, $10^{4}$ replicates)
+and report the 95\% confidence interval; we treat the difference as reliable when
+this interval excludes zero. This bootstrap reflects item-sampling uncertainty
+\emph{conditional on the trained models}, while variability due to training is
+captured by the seed-level mean $\pm$ std, which we report alongside it (with
+only three seeds, the seed spread is descriptive rather than a formal test).
