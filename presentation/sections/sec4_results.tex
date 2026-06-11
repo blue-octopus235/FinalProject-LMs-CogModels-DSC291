@@ -71,3 +71,39 @@
     \end{column}
   \end{columns}
 \end{frame}
+
+\begin{frame}{Does structure help? RNNG vs.\ LSTM}
+  \begin{columns}[T]
+    \begin{column}{0.55\textwidth}
+      \centering
+      \includegraphics[width=\linewidth,height=0.65\textheight,keepaspectratio]{combined_acc_vs_noise.png}
+    \end{column}
+    \begin{column}{0.45\textwidth}
+      \small
+      \begin{itemize}
+        \item RNNG $=$ LSTM plus an explicit syntactic (tree) bias
+        \item More accurate than the LSTM at \emph{every} noise level
+        \item Gap widens where noise bites hardest: at $50\%$, $0.834$ vs.\ $0.708$
+        \item Same held-out set ($\sim$20k pairs); single full-scale seed so far
+      \end{itemize}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{RNNG keeps the hierarchical rule under noise}
+  \begin{columns}[T]
+    \begin{column}{0.55\textwidth}
+      \centering
+      \includegraphics[width=\linewidth,height=0.65\textheight,keepaspectratio]{combined_attractor_gap.png}
+    \end{column}
+    \begin{column}{0.45\textwidth}
+      \small
+      \begin{itemize}
+        \item LSTM's attractor gap grows $2.7\times$ with noise ($0.073 \to 0.198$)
+        \item RNNG's stays low and flat ($0.020 \to 0.036$)
+        \item At $50\%$ noise the RNNG gap is \emph{half} the LSTM's clean-data gap
+        \item Structural bias preserves the hierarchical rule where the LSTM defaults to the linear shortcut
+      \end{itemize}
+    \end{column}
+  \end{columns}
+\end{frame}
