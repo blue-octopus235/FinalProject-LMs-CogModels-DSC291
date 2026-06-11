@@ -8,8 +8,9 @@ We evaluate every model on the same leak-free set of $19{,}819$ minimal pairs
 ($1{,}528$ with an attractor, $18{,}291$ without), held identical across all
 five noise conditions. Unless noted, reported values are the mean over six LSTM
 runs per condition (seeds $\{1,2,3\}$, run on both local MPS and Colab T4);
-$\pm$ denotes standard deviation across runs. Results for the RNNG arm are
-forthcoming and will be added to Table~\ref{tab:main} once training completes.
+$\pm$ denotes standard deviation across runs. The RNNG arm
+(Section~\ref{sec:rnng}) is a single full-scale seed evaluated on the same
+held-out set; additional seeds for error bars are in progress.
 
 \subsection{Noise degrades agreement, with a threshold near 50\%}
 
@@ -108,25 +109,81 @@ entrenches the linear heuristic rather than correcting it.
   \label{fig:acc_trajectory}
 \end{figure}
 
-% ===========================================================================
-% RNNG DROP-IN (preliminary). Uncomment once Jackson pushes
-% results/rnng_eval_results.csv and `python src/plots_compare.py` has written
-% results/compare_acc_vs_noise.png. Fill the three XX.X accuracy numbers from
-% the CSV (baseline / medium_high / high). 1 seed, 3 conditions, reduced epochs.
-% ---------------------------------------------------------------------------
-% \subsection{Preliminary: RNNG vs.\ LSTM}
-% As a first architectural comparison we trained the syntactically biased RNNG
-% on a reduced protocol (single seed, three conditions---baseline, medium-high,
-% high---and fewer epochs than the LSTM), so these results indicate a
-% \emph{direction} rather than a significance-tested effect
-% (Figure~\ref{fig:compare_acc}). [TODO: one sentence stating whether RNNG holds
-% accuracy / a smaller attractor gap than the LSTM at matched noise: RNNG
-% accuracy XX.X / XX.X / XX.X vs.\ LSTM 0.961 / 0.934 / 0.708.]
-% \begin{figure}[t]
-%   \centering
-%   \includegraphics[width=\linewidth]{compare_acc_vs_noise.png}
-%   \caption{Preliminary LSTM vs.\ RNNG minimal-pair accuracy across noise rates
-%     (RNNG: single seed, three conditions, reduced training).}
-%   \label{fig:compare_acc}
-% \end{figure}
-% ===========================================================================
+\subsection{Structure buys robustness: RNNG vs.\ LSTM}
+\label{sec:rnng}
+
+To test whether an explicit hierarchical bias changes how a model copes with
+noise, we ran the identical five-condition sweep with a Recurrent Neural Network
+Grammar (RNNG), which builds an explicit constituency structure as it processes
+each sentence. The RNNG is evaluated on the same held-out minimal-pair set as
+the LSTM (RNNG: $19{,}983$ pairs; LSTM: $19{,}819$), so overall accuracies are
+directly comparable. These RNNG values are a single full-scale seed (matched to
+the LSTM protocol at $150$k sentences and eight epochs); seeds are still
+accruing, so we report point estimates without error bars and read them as a
+\emph{direction} that the multi-seed run will tighten.
+
+Two contrasts stand out (Table~\ref{tab:rnng_compare},
+Figures~\ref{fig:compare_acc}--\ref{fig:compare_gap}). First, the RNNG is more
+accurate than the LSTM at \emph{every} noise level, and its margin widens
+exactly where noise bites hardest: the two architectures are nearly tied on
+clean data ($0.979$ vs.\ $0.961$), but at $50\%$ noise the RNNG holds $0.834$
+where the LSTM has fallen to $0.708$---a $12.6$-point gap. Across the full range
+the RNNG sheds only $14.5$ accuracy points from baseline to $50\%$ noise
+($0.979 \to 0.834$), against the LSTM's $25.3$-point collapse
+($0.961 \to 0.708$). The structural prior does not make the model immune---the
+threshold-like drop at $50\%$ is still visible---but it substantially blunts it.
+
+Second, and more tellingly, the RNNG barely drifts toward the linear heuristic.
+Its attractor gap stays low and essentially flat as noise rises, from $0.020$ at
+baseline to $0.036$ at $50\%$ noise (a $1.8\times$ range), whereas the LSTM's gap
+grows $2.7\times$, from $0.073$ to $0.198$ (Figure~\ref{fig:compare_gap}). The
+comparison is stark at the extremes: the RNNG's gap under the heaviest noise
+($0.036$) is only \emph{half} the LSTM's gap on perfectly clean data ($0.073$).
+Where the LSTM trades the hierarchical rule for the nearest-noun shortcut as its
+training data degrades, the RNNG keeps resolving agreement structurally almost
+regardless of noise. This is the signal our architectural hypothesis predicted:
+a built-in syntactic bias preserves the hierarchical generalization under input
+corruption that drives a sequential model to the linear one.
+
+\begin{table}[t]
+  \centering
+  \small
+  \begin{tabular}{lccccc}
+    \toprule
+    & & \multicolumn{2}{c}{Acc.\ (all)} & \multicolumn{2}{c}{Attractor gap} \\
+    \cmidrule(lr){3-4}\cmidrule(lr){5-6}
+    Condition & Rate & LSTM & RNNG & LSTM & RNNG \\
+    \midrule
+    baseline    & 0.000 & $0.961$ & $\mathbf{0.979}$ & $0.073$ & $\mathbf{0.020}$ \\
+    low         & 0.004 & $0.958$ & $\mathbf{0.979}$ & $0.087$ & $\mathbf{0.030}$ \\
+    medium-low  & 0.020 & $0.952$ & $\mathbf{0.978}$ & $0.103$ & $\mathbf{0.022}$ \\
+    medium-high & 0.100 & $0.934$ & $\mathbf{0.971}$ & $0.153$ & $\mathbf{0.034}$ \\
+    high        & 0.500 & $0.708$ & $\mathbf{0.834}$ & $0.198$ & $\mathbf{0.036}$ \\
+    \bottomrule
+  \end{tabular}
+  \caption{LSTM vs.\ RNNG minimal-pair accuracy and attractor gap by
+    training-noise rate, on the same held-out set. LSTM values are the mean over
+    six runs (Table~\ref{tab:main}); RNNG values are a single full-scale seed.
+    The RNNG is more accurate at every noise level and keeps a near-flat,
+    low attractor gap where the LSTM's grows steeply.}
+  \label{tab:rnng_compare}
+\end{table}
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\linewidth]{combined_acc_vs_noise.png}
+  \caption{Overall minimal-pair accuracy vs.\ noise rate for the LSTM and RNNG.
+    The RNNG sits above the LSTM throughout and separates sharply at $50\%$
+    noise (RNNG single seed; LSTM mean of six).}
+  \label{fig:compare_acc}
+\end{figure}
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\linewidth]{combined_attractor_gap.png}
+  \caption{Attractor gap vs.\ noise rate. The LSTM's reliance on the linear cue
+    climbs steeply with noise ($0.073 \to 0.198$); the RNNG's stays low and
+    nearly flat ($0.020 \to 0.036$), below the LSTM's clean-data gap even at
+    $50\%$ noise.}
+  \label{fig:compare_gap}
+\end{figure}
