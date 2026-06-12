@@ -1,7 +1,7 @@
 \section{Conclusion}
 \label{sec:conclusion}
 
-This study investigates how grammatical noise affects the acquisition of grammatical rules in language models by systematically injecting subject--verb agreement (SVA) errors into the training data and comparing the robustness of models with different structural inductive biases. By varying only the level of grammatical corruption while holding the test set, vocabulary, dataset size, and model configuration constant, we are able to directly observe how grammatical knowledge is learned under degraded linguistic input.
+This study investigates how grammatical noise affects the acquisition of grammatical rules in language models by systematically injecting SVA errors into the training data and comparing the robustness of models with different structural inductive biases. By varying only the level of grammatical corruption while holding the test set, vocabulary, dataset size, and model configuration constant, we are able to directly observe how grammatical knowledge is learned under degraded linguistic input.
 
 Our results show that language models exhibit a substantial degree of grammatical robustness. Under low to moderate levels of noise, models are still able to acquire the correct subject--verb agreement rule, suggesting that hierarchical grammatical knowledge does not require perfectly clean input to emerge. However, this robustness is not unlimited. Once the noise level becomes sufficiently high, performance deteriorates sharply and exhibits a clear threshold effect: rule acquisition is no longer merely delayed, but effectively prevented.
 
