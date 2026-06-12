@@ -1,6 +1,10 @@
 Can language models acquire grammatical rules from noisy linguistic input, and does structural inductive bias improve robustness to such noise?
 
-To anwser these questions, we systematically inject subject--verb agreement (SVA) at rates ranging from 0% to 50% to a large corpus of wiki-English sentences, creating training corpora with controlled levels of grammatical corruption
+To anwser these questions, we systematically inject subject--verb agreement (SVA) at rates ranging from 0% to 50% to a large corpus of English Wikipedia sentences, creating training corpora with controlled levels of grammatical corruption. We then compare a sequential language model (LSTM) and a structurally biased model (RNNG) with the same test set, vocabulary, and training data size.
+
+Our results show that both models remain highly accurate under low and moderate noise levels, indicating that grammatical rules can be learned from imperfect input. However, after a injecting more errors, accuracy drops sharply. Increasing noise also causes the LSTM to rely more heavily on a linear nearest-noun heuristic rather than hierarchical agreement. In contrast, the RNNG maintains substantially smaller attractor gaps and consistently higher accuracy under noisy conditions.
+
+These findings suggest that hierarchical grammatical knowledge is learnable from noisy input, but that structural inductive bias plays an important role in preserving robust syntactic generalization when linguistic evidence becomes unreliable.
 % OWNER: Kelly Fu (writing coordination per proposal)
 % TODO (Kelly): Abstract (~150--200 words). State the question, the noise manipulation,
 % the headline result, and the takeaway.
