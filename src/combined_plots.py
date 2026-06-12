@@ -94,6 +94,9 @@ def main():
                       f"dropped {dropped} row(s) from other seeds "
                       f"(seed 1 truncated, seed 3 unvalidated; use --rnng_seeds all "
                       f"to override).")
+        if len(rnng) == 0:
+            print(f"[combined_plots] WARNING: --rnng_seeds {args.rnng_seeds!r} "
+                  f"matched no RNNG rows; the RNNG arm will be ABSENT from the plots.")
         frames.append(rnng)
 
     if not frames:
