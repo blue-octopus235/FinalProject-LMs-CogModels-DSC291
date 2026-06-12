@@ -9,7 +9,7 @@ Our corruption is a fixed per-sentence probability of flipping the verb's number
 feature, applied independently and uncorrelated with any property of the
 sentence. Naturalistic agreement errors are not like this: they cluster by
 speaker, register, and construction, and arise disproportionately in the hard
-configurations---long dependencies and intervening attractors---where human
+configurations (long dependencies and intervening attractors), where human
 production itself slips. A model trained on realistically structured noise might
 degrade along a different curve, perhaps eroding on attractor items sooner than
 our uniform manipulation predicts. Our noise also targets only the verb's number;
@@ -22,11 +22,11 @@ The training and evaluation data come from a controlled subject--verb agreement
 corpus with a restricted vocabulary and lowercased, anonymized tokens. This
 control is what makes the leak-free minimal-pair design and the attractor-gap
 metric clean, but it bounds external validity: the sentences are simpler and more
-template-like than running text, and the absolute accuracies---and the threshold
-near $50\%$ noise---may not transfer to models trained on naturalistic corpora.
-We therefore read every comparison as a relative, within-setup contrast between
-architectures, not as a calibrated estimate of either model's behavior on natural
-language.
+template-like than running text, and the absolute accuracies, along with the
+threshold near $50\%$ noise, may not transfer to models trained on naturalistic
+corpora. We therefore read every comparison as a relative, within-setup contrast
+between architectures, not as a calibrated estimate of either model's behavior on
+natural language.
 
 \paragraph{RNNG ceiling is bounded by parse quality.}
 The RNNG is trained on benepar parses of the clean corpus rather than gold trees.
@@ -40,15 +40,15 @@ ON-LSTM) would be an informative control that we leave to future work.
 
 \paragraph{Scale, seeds, and training length.}
 The architecture comparison currently rests on a single full-scale RNNG seed.
-While that seed is scored on the full held-out set---resolving the earlier
-coverage mismatch with the LSTM---we cannot yet attach error bars or a
-significance test to the cross-architecture contrast, and the multi-seed
-replication (seeds~1 and~3) is still in progress. Both models are also modest in
-scale (two layers, $150$k training sentences, five to eight epochs). We confirm
-that the LSTM learning trajectories converge, but we do not exhaustively verify
-RNNG convergence at eight epochs; larger models or longer training could shift
-the breaking point and should temper any precise reading of the crossover noise
-rate. Finally, the two architectures' \emph{overall} accuracies are compared on
+That seed is scored on the full held-out set, which resolves the earlier coverage
+mismatch with the LSTM, but we cannot yet attach error bars or a significance
+test to the cross-architecture contrast, and the multi-seed replication (seeds~1
+and~3) is still in progress. Both models are also modest in scale (two layers,
+$150$k training sentences, five to eight epochs). We confirm that the LSTM
+learning trajectories converge, but we do not exhaustively verify RNNG
+convergence at eight epochs; larger models or longer training could shift the
+breaking point and should temper any precise reading of the crossover noise rate.
+Finally, the two architectures' \emph{overall} accuracies are compared on
 near-identical rather than identical held-out sets (a $\sim$99\% overlap,
 $19{,}983$ vs.\ $19{,}819$ pairs, owing to which long sentences each scorer
 covers); the within-model attractor gap, a rate, is unaffected, and an exact

@@ -10,7 +10,7 @@ five noise conditions. Unless noted, reported values are the mean over six LSTM
 runs per condition (seeds $\{1,2,3\}$, run on both local MPS and Colab T4);
 $\pm$ denotes standard deviation across runs. The RNNG arm
 (Section~\ref{sec:rnng}) is a single full-scale seed evaluated on the same
-held-out set; additional seeds for error bars are in progress.
+held-out set, with additional seeds for error bars still in progress.
 
 \subsection{Noise degrades agreement, with a threshold near 50\%}
 
@@ -19,7 +19,7 @@ levels and then collapses at the highest rate (Table~\ref{tab:main},
 Figure~\ref{fig:acc_vs_noise}). Accuracy falls only $2.7$ points as the error
 rate climbs from $0\%$ to $10\%$ ($0.961 \to 0.934$), but drops $22.6$ points
 between $10\%$ and $50\%$ ($0.934 \to 0.708$). The model thus tolerates
-substantial agreement noise---up to roughly one corrupted verb in ten---before
+substantial agreement noise, up to roughly one corrupted verb in ten, before
 its grasp of the rule breaks down. This non-linear, threshold-like profile
 matches the first outcome anticipated in our proposal: input quality can be
 degraded considerably before grammar learning is affected, but beyond a critical
@@ -57,12 +57,12 @@ point performance falls sharply toward chance.
 \subsection{Noise pushes the model toward the linear rule}
 
 Splitting accuracy by attractor presence isolates \emph{which} rule the model
-relies on (Figure~\ref{fig:acc_by_attractor}). No-attractor items---where the
-hierarchical and linear rules make the same prediction---stay above $0.94$ until
+relies on (Figure~\ref{fig:acc_by_attractor}). No-attractor items, where the
+hierarchical and linear rules make the same prediction, stay above $0.94$ until
 the $50\%$ condition. Attractor items, where the two rules disagree, erode far
 faster: accuracy falls from $0.894$ at baseline to $0.525$ (near chance) at
-$50\%$ noise. As a result the \emph{attractor gap}---our index of reliance on the
-linear, nearest-noun heuristic---grows monotonically with noise, from $0.073$ to
+$50\%$ noise. As a result the \emph{attractor gap}, our index of reliance on the
+linear, nearest-noun heuristic, grows monotonically with noise, from $0.073$ to
 $0.198$ (Figure~\ref{fig:attractor_gap}). Noisier training data drives the model
 away from the hierarchical rule and toward the linear shortcut, consistent with
 the ``noise pushes models toward simpler generalization'' branch of our second
@@ -87,17 +87,17 @@ predicted outcome.
 
 \subsection{Learning trajectories: delay vs.\ prevention}
 
-To ask \emph{when}---not just whether---the rule is acquired, we checkpoint every
+To ask not just whether but \emph{when} the rule is acquired, we checkpoint every
 $500$ optimizer steps and re-score the full minimal-pair set at each point
 (Figure~\ref{fig:acc_trajectory}). The curves separate the two ways noise can
 hurt. For the baseline through medium-high conditions, accuracy follows nearly
 the same trajectory and converges to roughly the same endpoint
-($0.95$--$0.97$): noise \emph{delays} acquisition but does not prevent it. The
-$50\%$ condition behaves qualitatively differently---it plateaus near $0.69$ and
-never reaches the rule, i.e.\ \emph{prevention}. The attractor gap reinforces
+($0.95$ to $0.97$): noise \emph{delays} acquisition but does not prevent it. The
+$50\%$ condition behaves qualitatively differently. It plateaus near $0.69$ and
+never reaches the rule, a case of \emph{prevention}. The attractor gap reinforces
 this: for the clean model the gap shrinks over training as the hierarchical rule
 consolidates ($0.148 \to 0.054$), whereas for the $50\%$ model it \emph{grows}
-with more training ($0.143 \to 0.197$)---additional exposure to corrupted data
+with more training ($0.143 \to 0.197$), so additional exposure to corrupted data
 entrenches the linear heuristic rather than correcting it.
 
 \begin{figure}[t]
@@ -116,32 +116,33 @@ To test whether an explicit hierarchical bias changes how a model copes with
 noise, we ran the identical five-condition sweep with a Recurrent Neural Network
 Grammar (RNNG), which builds an explicit constituency structure as it processes
 each sentence. The RNNG's beam-search scorer covers $19{,}983$ of the minimal
-pairs against the LSTM's $19{,}819$---a $\sim$99\% overlap of the same held-out
-set---so overall accuracies are comparable up to that small difference in
-coverage; the attractor gap, a within-model rate rather than a count, is exact
-across architectures and is the cleaner cross-model contrast (an
-intersection-matched comparison is left to future work). These RNNG values are a
+pairs against the LSTM's $19{,}819$ (a $\sim$99\% overlap of the same held-out
+set), so overall accuracies are comparable up to that small difference in
+coverage. The attractor gap, a within-model rate rather than a count, is exact
+across architectures and is the cleaner cross-model contrast; an
+intersection-matched comparison is left to future work. These RNNG values are a
 single full-scale seed (matched to the LSTM protocol at $150$k sentences and
-eight epochs); seeds are still accruing, so we report point estimates without
-error bars and read them as a \emph{direction} that the multi-seed run will
-tighten.
+eight epochs). Because seeds are still accruing, we report point estimates
+without error bars and read them as a \emph{direction} that the multi-seed run
+will tighten.
 
 Two contrasts stand out (Table~\ref{tab:rnng_compare},
-Figures~\ref{fig:compare_acc}--\ref{fig:compare_gap}). First, the RNNG is more
+Figures~\ref{fig:compare_acc} and \ref{fig:compare_gap}). First, the RNNG is more
 accurate than the LSTM at \emph{every} noise level, and its margin widens
-exactly where noise bites hardest: the two architectures are nearly tied on
+exactly where noise bites hardest. The two architectures are nearly tied on
 clean data ($0.979$ vs.\ $0.961$), but at $50\%$ noise the RNNG holds $0.834$
-where the LSTM has fallen to $0.708$---a $12.6$-point gap. Across the full range
+where the LSTM has fallen to $0.708$, a $12.6$-point gap. Across the full range
 the RNNG sheds only $14.5$ accuracy points from baseline to $50\%$ noise
 ($0.979 \to 0.834$), against the LSTM's $25.3$-point collapse
-($0.961 \to 0.708$). The structural prior does not make the model immune---the
-threshold-like drop at $50\%$ is still visible---but it substantially blunts it.
+($0.961 \to 0.708$). The structural prior does not make the model immune, since
+the threshold-like drop at $50\%$ is still visible, but it substantially blunts
+it.
 
 Second, and more tellingly, the RNNG barely drifts toward the linear heuristic.
 Its attractor gap stays low and essentially flat as noise rises, from $0.020$ at
 baseline to $0.036$ at $50\%$ noise (a $1.8\times$ range), whereas the LSTM's gap
 grows $2.7\times$, from $0.073$ to $0.198$ (Figure~\ref{fig:compare_gap}). The
-comparison is stark at the extremes: the RNNG's gap under the heaviest noise
+contrast is sharp at the extremes: the RNNG's gap under the heaviest noise
 ($0.036$) is only \emph{half} the LSTM's gap on perfectly clean data ($0.073$).
 Where the LSTM trades the hierarchical rule for the nearest-noun shortcut as its
 training data degrades, the RNNG keeps resolving agreement structurally almost

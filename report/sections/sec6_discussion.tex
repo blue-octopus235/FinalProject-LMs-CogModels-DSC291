@@ -14,25 +14,25 @@ it climbs steadily ($0.073 \to 0.198$) even while aggregate accuracy looks
 healthy, revealing that the model is quietly trading the hierarchical rule for
 the linear nearest-noun heuristic well before its overall performance gives way.
 The trajectory analysis sharpens the distinction between the two ways noise can
-act. Up to $10\%$ noise, learning is merely \emph{delayed}---every condition
-converges to the same accuracy given enough steps---whereas at $50\%$ it is
+act. Up to $10\%$ noise, learning is merely \emph{delayed}, with every condition
+converging to the same accuracy given enough steps, whereas at $50\%$ it is
 \emph{prevented}: the model plateaus far short of the rule, and further training
 deepens rather than repairs its reliance on the linear cue.
 
 \paragraph{Does structure buy robustness?}
-Our central architectural question---whether a syntactically biased model (RNNG)
-withstands noise better than a purely sequential one (LSTM)---the RNNG sweep now
-answers in the affirmative (Section~\ref{sec:rnng}). At matched noise the RNNG is
-more accurate than the LSTM throughout, and the advantage \emph{grows} with
-noise, from under two points on clean data to $12.6$ points at $50\%$
+Our central architectural question, whether a syntactically biased model (RNNG)
+withstands noise better than a purely sequential one (LSTM), is now answered in
+the affirmative by the RNNG sweep (Section~\ref{sec:rnng}). At matched noise the
+RNNG is more accurate than the LSTM throughout, and the advantage \emph{grows}
+with noise, from under two points on clean data to $12.6$ points at $50\%$
 corruption. The decisive contrast is in \emph{which rule} each model keeps: the
 LSTM's attractor gap climbs steeply as training data degrades
 ($0.073 \to 0.198$), marking a drift toward the linear nearest-noun shortcut,
-whereas the RNNG's gap stays low and almost flat ($0.020 \to 0.036$)---under the
-heaviest noise it is still only half the LSTM's clean-data gap. An explicit
+whereas the RNNG's gap stays low and almost flat ($0.020 \to 0.036$), and under
+the heaviest noise it is still only half the LSTM's clean-data gap. An explicit
 hierarchical prior thus preserves the structural generalization at noise levels
 where a sequential learner has already defaulted to the linear one, implicating
-architectural structure---not just input statistics---as a source of robustness.
+architectural structure, not just input statistics, as a source of robustness.
 The finding is qualified: the RNNG still loses overall accuracy at $50\%$ noise
 ($0.979 \to 0.834$), so structure blunts rather than abolishes the threshold
 effect, and these RNNG values rest on a single (full-scale) seed pending the
@@ -46,8 +46,8 @@ The pattern is suggestive for how structural knowledge might arise from
 statistical learning. The LSTM does not begin agreement-aware; the hierarchical
 rule is \emph{acquired} over training, and in the clean setting the attractor
 gap shrinks as that rule consolidates. Noise does not flip a switch so much as
-shift the balance between two competing generalizations---hierarchical and
-linear---both of which the data can support. Heavy enough noise makes the linear
+shift the balance between two competing generalizations, hierarchical and
+linear, both of which the data can support. Heavy enough noise makes the linear
 rule the better fit to the (corrupted) input, and the model follows the data.
 That a distributional learner recovers the hierarchical rule at all from this
 templatic corpus is itself evidence that the structure is more learnable from
@@ -55,9 +55,9 @@ input than a strong nativist account would predict; that it abandons the rule
 under sufficient noise marks the limit of that learnability.
 
 \paragraph{Threats to validity.}
-Three caveats bound these claims; we treat them fully in
-Section~\ref{sec:limitations}. Our noise is synthetic and uniform---a fixed
-per-sentence flip probability---rather than the structured, frequency-dependent
+Three caveats bound these claims, and we treat them fully in
+Section~\ref{sec:limitations}. Our noise is synthetic and uniform, a fixed
+per-sentence flip probability rather than the structured, frequency-dependent
 errors of natural input. The corpus is templatic and vocabulary-controlled,
 which aids control but limits external validity. Finally, the trajectory
 analysis is single-seed; the converging-versus-plateauing pattern is clear, but
