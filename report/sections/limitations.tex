@@ -48,7 +48,11 @@ scale (two layers, $150$k training sentences, five to eight epochs). We confirm
 that the LSTM learning trajectories converge, but we do not exhaustively verify
 RNNG convergence at eight epochs; larger models or longer training could shift
 the breaking point and should temper any precise reading of the crossover noise
-rate.
+rate. Finally, the two architectures' \emph{overall} accuracies are compared on
+near-identical rather than identical held-out sets (a $\sim$99\% overlap,
+$19{,}983$ vs.\ $19{,}819$ pairs, owing to which long sentences each scorer
+covers); the within-model attractor gap, a rate, is unaffected, and an exact
+intersection-matched comparison is left to future work.
 
 \paragraph{Single language and phenomenon.}
 All results concern English subject--verb number agreement. English has
