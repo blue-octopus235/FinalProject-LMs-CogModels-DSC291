@@ -20,9 +20,8 @@ These two architectures therefore provide a useful contrast for studying the rol
 
 \subsection{Robustness to Grammatical Noise}
 
-More recently, a growing body of work has investigated the robustness of language models under noisy linguistic conditions. Existing studies have shown that model behavior is sensitive to both the amount and type of grammatical corruption, whether grammatical errors are introduced during evaluation\citep{yin2020}
- or incorporated into training data through naturally occurring learner errors\citep{naplava2021}
-. These findings suggest that grammatical noise can influence not only downstream task performance but also the learning process itself, making controlled noise injection a meaningful experimental methodology.
+More recently, a growing body of work has investigated the robustness of language models under noisy linguistic conditions. Existing studies have shown that model behavior is sensitive to both the amount and type of grammatical corruption, whether grammatical errors are introduced during evaluation
+ or incorporated into training data through naturally occurring learner errors. These findings suggest that grammatical noise can influence not only downstream task performance but also the learning process itself, making controlled noise injection a meaningful experimental methodology.
 
 Despite this progress, most prior work has focused on robustness to noisy inputs or on the effect of grammatical corruption on overall model performance. Much less attention has been paid to whether grammatical rules themselves can still be acquired when the training environment is systematically degraded. In particular, studies of subject--verb agreement have largely assumed naturally occurring training corpora and examined whether models learn hierarchical syntactic dependencies under standard learning conditions.
 
