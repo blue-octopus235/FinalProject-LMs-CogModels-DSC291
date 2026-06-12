@@ -1,0 +1,18 @@
+\section*{Author Contributions}
+
+\begin{itemize}
+  \item \textbf{Jackson Wilke} built the end-to-end LSTM training and evaluation
+    infrastructure (shared vocabulary, leak-free held-out split, minimal-pair
+    scoring, attractor-gap metric, result visualizations, statistical tests) and
+    the RNNG train+eval pipeline (\texttt{run\_rnng\_datahub.py}), including
+    running all five RNNG seed-1 conditions.
+    Wrote the Methods, Experimental Setup, and Appendix sections.
+  \item \textbf{Kelly Fu} built the noise-injection pipeline that produced the
+    five corrupted training corpora and validated the injections.
+    Wrote the Introduction, Background \& Related Work, Abstract, and Conclusion
+    sections.
+  \item \textbf{Sanjana Garimella} added mid-training checkpointing and the
+    trajectory evaluation script, ran the full three-seed LSTM sweep and
+    learning-trajectory sweep on Colab, and expanded the literature review.
+    Wrote the Results and Discussion sections.
+\end{itemize}
