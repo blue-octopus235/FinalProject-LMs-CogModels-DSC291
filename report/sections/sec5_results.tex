@@ -115,12 +115,16 @@ entrenches the linear heuristic rather than correcting it.
 To test whether an explicit hierarchical bias changes how a model copes with
 noise, we ran the identical five-condition sweep with a Recurrent Neural Network
 Grammar (RNNG), which builds an explicit constituency structure as it processes
-each sentence. The RNNG is evaluated on the same held-out minimal-pair set as
-the LSTM (RNNG: $19{,}983$ pairs; LSTM: $19{,}819$), so overall accuracies are
-directly comparable. These RNNG values are a single full-scale seed (matched to
-the LSTM protocol at $150$k sentences and eight epochs); seeds are still
-accruing, so we report point estimates without error bars and read them as a
-\emph{direction} that the multi-seed run will tighten.
+each sentence. The RNNG's beam-search scorer covers $19{,}983$ of the minimal
+pairs against the LSTM's $19{,}819$---a $\sim$99\% overlap of the same held-out
+set---so overall accuracies are comparable up to that small difference in
+coverage; the attractor gap, a within-model rate rather than a count, is exact
+across architectures and is the cleaner cross-model contrast (an
+intersection-matched comparison is left to future work). These RNNG values are a
+single full-scale seed (matched to the LSTM protocol at $150$k sentences and
+eight epochs); seeds are still accruing, so we report point estimates without
+error bars and read them as a \emph{direction} that the multi-seed run will
+tighten.
 
 Two contrasts stand out (Table~\ref{tab:rnng_compare},
 Figures~\ref{fig:compare_acc}--\ref{fig:compare_gap}). First, the RNNG is more
@@ -162,7 +166,8 @@ corruption that drives a sequential model to the linear one.
     \bottomrule
   \end{tabular}
   \caption{LSTM vs.\ RNNG minimal-pair accuracy and attractor gap by
-    training-noise rate, on the same held-out set. LSTM values are the mean over
+    training-noise rate, on near-identical held-out sets ($\sim$99\% overlap).
+    LSTM values are the mean over
     six runs (Table~\ref{tab:main}); RNNG values are a single full-scale seed.
     The RNNG is more accurate at every noise level and keeps a near-flat,
     low attractor gap where the LSTM's grows steeply.}

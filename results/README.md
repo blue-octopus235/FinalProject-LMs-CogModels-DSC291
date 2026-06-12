@@ -69,10 +69,13 @@ Read: the RNNG attractor gap stays **flat and low** as noise rises (0.020 → 0.
 RNNG `acc_all` also stays above the LSTM at every rate (0.979 vs 0.961 baseline; 0.834 vs 0.708 at
 high). This is the H3 "structure buys robustness" signal — pending seeds 1 and 3 for error bars.
 
-> **Comparability — resolved at full coverage.** Seed 2 recovers the full held-out set
-> (**19,983 pairs, 1,536 attractors**), essentially matching the LSTM's **19,819 (1,528)**, so
-> `acc_all` is now directly comparable across architectures. (Jackson's earlier seed-1 run scored
-> only **2,654 pairs** — that build skipped the in-vocab filter and kept only beam-scorable pairs;
-> those numbers are superseded by the full-coverage seed-2 run and must **not** be averaged with
-> it. `rnng_eval_results.csv` retains both seeds, so filter to `seed==2` for the paper figures.)
-> Still open: RNNG convergence check (val PPL at 8 epochs) and a benepar tree-quality spot-check.
+> **Comparability — near-resolved at full coverage.** Seed 2 recovers the full held-out set
+> (**19,983 pairs, 1,536 attractors**), within ~0.8% of the LSTM's **19,819 (1,528)**, so
+> `acc_all` is now comparable across architectures up to that small coverage difference (the two
+> sets are ~99% overlapping, not identical; the within-model attractor gap, a rate, is exact). An
+> exact intersection-matched comparison (`src/match_subset.py` workflow) is left to future work.
+> (Jackson's earlier seed-1 run scored only **2,654 pairs** — that build skipped the in-vocab
+> filter and kept only beam-scorable pairs; those numbers are superseded by the full-coverage
+> seed-2 run and must **not** be averaged with it. `rnng_eval_results.csv` retains both seeds, so
+> filter to `seed==2` for the paper figures.) Still open: RNNG convergence check (val PPL at 8
+> epochs) and a benepar tree-quality spot-check.
