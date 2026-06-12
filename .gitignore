@@ -7,6 +7,9 @@ data/*.csv
 checkpoints/*.pt
 # results are regenerated; keep figures if you want them in the repo
 # (uncomment to ignore) results/*.png
+# compiled report PDF is a build artifact (regenerate with `make` in report/);
+# tracking it causes binary merge conflicts on every rebuild
+report/main.pdf
 __pycache__/
 *.pyc
 .DS_Store
