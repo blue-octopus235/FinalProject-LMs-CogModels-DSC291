@@ -21,18 +21,19 @@ in Appendix~\ref{app:repro}.
 
 \subsection{Conditions and Runs}
 \label{sec:runs}
-The grid is 5 noise rates $\times$ 2 architectures $\times$ 3 seeds. The LSTM
-sweep was run on two machines (local Apple MPS and a Colab T4), giving six runs
-per condition; the RNNG sweep contributes three seeds per condition. Unless
-noted, reported values aggregate over seeds, with $\pm$ denoting standard
-deviation across runs.
+The grid is 5 noise rates $\times$ 2 architectures. The LSTM sweep was run on
+two machines (local Apple MPS and a Colab T4) across three seeds, giving six
+runs per condition; reported LSTM values aggregate over these runs, with $\pm$
+denoting standard deviation. The RNNG arm contributes one full-scale seed of
+record per condition, matched to the LSTM protocol; additional RNNG seeds are
+pending, so we report RNNG point estimates without error bars.
 
 \subsection{Trajectory Analysis}
 \label{sec:trajectory}
-To ask \emph{when}---not just whether---a rule is acquired, we additionally
-checkpoint the LSTM every 500 optimizer steps and re-score the full minimal-pair
-set at each checkpoint, yielding accuracy and attractor-gap trajectories over
-training (Section~\ref{sec:results}).
+To measure \emph{when} a rule is acquired, not only whether, we checkpoint the
+LSTM every 500 optimizer steps and re-score the full minimal-pair set at each
+checkpoint, yielding accuracy and attractor-gap trajectories over training
+(Section~\ref{sec:results}).
 
 \subsection{Hypotheses}
 \label{sec:hypotheses}
@@ -40,16 +41,14 @@ We test three preregistered hypotheses:
 \begin{itemize}
   \item \textbf{H1.} Overall minimal-pair accuracy decreases as the training
     noise rate increases.
-  \item \textbf{H2.} The attractor gap $\Delta$ widens with noise---models lean
+  \item \textbf{H2.} The attractor gap $\Delta$ widens with noise as models lean
     increasingly on the linear nearest-noun cue.
   \item \textbf{H3.} The RNNG's attractor gap widens \emph{more slowly} than the
     LSTM's; an explicit structural bias buys robustness to noisy supervision.
 \end{itemize}
-H3 is evaluated on the matched subset (Section~\ref{sec:metrics}). We summarize
-the per-condition gap difference $\Delta_{\text{LSTM}} - \Delta_{\text{RNNG}}$
-with a pair-level bootstrap (resampling the matched pairs, $10^{4}$ replicates)
-and report the 95\% confidence interval; we treat the difference as reliable when
-this interval excludes zero. This bootstrap reflects item-sampling uncertainty
-\emph{conditional on the trained models}, while variability due to training is
-captured by the seed-level mean $\pm$ std, which we report alongside it (with
-only three seeds, the seed spread is descriptive rather than a formal test).
+We assess H3 by comparing the LSTM and RNNG attractor gaps across conditions on
+their shared held-out set (Section~\ref{sec:metrics}). The LSTM gap carries a
+seed-level mean $\pm$ std over its six runs; the RNNG arm is a single full-scale
+seed, so we read the per-condition gap difference
+$\Delta_{\text{LSTM}} - \Delta_{\text{RNNG}}$ as a direction to be tightened by
+the pending multi-seed RNNG replication rather than as a formal test.

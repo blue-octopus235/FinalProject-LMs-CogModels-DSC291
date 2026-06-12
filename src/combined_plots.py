@@ -67,6 +67,9 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--lstm_csv",  default="results/eval_results.csv")
     ap.add_argument("--rnng_csv",  default="results/rnng_eval_results.csv")
+    ap.add_argument("--rnng_seed", type=int, default=2,
+                    help="RNNG seed of record to plot (the full-scale 19,983-pair "
+                         "run reported in Results).")
     ap.add_argument("--out_dir",   default="results")
     args = ap.parse_args()
 
@@ -74,7 +77,15 @@ def main():
     if os.path.exists(args.lstm_csv):
         frames.append(load_dedup(args.lstm_csv, "LSTM"))
     if os.path.exists(args.rnng_csv):
-        frames.append(load_dedup(args.rnng_csv, "RNNG"))
+        rnng = load_dedup(args.rnng_csv, "RNNG")
+        # The RNNG CSV mixes seeds scored on different pair sets: seed 1 covers
+        # only the 2,654 beam-reachable pairs, while the full-scale seeds cover
+        # ~19,983. Averaging across them mixes incompatible denominators. We plot
+        # the single full-scale seed of record (seed 2, 19,983 pairs) that the
+        # Results section reports; later seeds will replace this filter once they
+        # are scored on the same full set.
+        rnng = rnng[rnng["seed"] == args.rnng_seed].reset_index(drop=True)
+        frames.append(rnng)
 
     if not frames:
         print("No results CSVs found.")

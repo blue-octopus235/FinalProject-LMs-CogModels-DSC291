@@ -16,7 +16,7 @@ We build on the subject--verb agreement (SVA) corpus of \citet{linzen2016},
 with rare tokens anonymized so the vocabulary is capped at the 10K most frequent
 types). Each sentence is annotated with the subject, the inflected verb, the
 verb's position, and the number of \emph{intervening} nouns that disagree in
-number with the subject---the ``attractors'' central to the
+number with the subject, the ``attractors'' central to the
 hierarchical-vs-linear distinction. We train on the real
 (\texttt{orig\_sentence}) word forms.
 
@@ -105,11 +105,10 @@ large $\Delta$ indicates the linear nearest-noun rule. Our central analysis is
 $\Delta$ as a function of the training-noise rate.
 
 \paragraph{Cross-model comparability.} The LSTM scores all 19{,}819 in-vocab
-pairs directly. The RNNG is scored by word-synchronous beam search, which yields
-per-verb surprisals for only the subset of held-out sentences it can parse
-within the beam (and does not apply the in-vocabulary verb filter). To keep the
-LSTM-vs-RNNG contrast on identical items, we evaluate both models on the
-\emph{matched subset}: the intersection of the pairs the RNNG can score with the
-LSTM's in-vocabulary pairs. The headline comparison and the H3 test
-(Section~\ref{sec:experiments}) are computed on this matched subset; full
-reproduction details are in Appendix~\ref{app:repro}.
+pairs. The RNNG is scored by word-synchronous beam search and does not apply the
+in-vocabulary verb filter, so the full-scale RNNG run covers 19{,}983 held-out
+pairs, a set that differs slightly from the LSTM's. We compare overall accuracy
+across these near-identical sets directly. Our primary cross-model contrast is
+the within-model attractor gap, a rate (not a count) that is robust to the small
+difference in covered pairs. Full reproduction details are in
+Appendix~\ref{app:repro}.

@@ -14,20 +14,14 @@ Neural Parser, swaps the verb terminal per noise condition, runs the
 \texttt{rnng-pytorch} preprocessing and training, and scores the shared minimal
 pairs by beam search.
 
-\paragraph{Matched-subset comparison (H3).} Because the RNNG and LSTM cover
-slightly different pair sets (Section~\ref{sec:metrics}), the cross-model
-comparison is computed on their intersection:
-\begin{enumerate}
-  \item \texttt{run\_rnng\_datahub.py -{}-seeds 1 2 3} writes per-pair records
-    (\texttt{results/rnng\_pairs\_*.csv}) and the indices each run could score.
-  \item \texttt{src/match\_subset.py} forms the matched index set
-    (RNNG-covered $\cap$ LSTM-in-vocabulary) and recomputes RNNG metrics on it.
-  \item \texttt{src/evaluate.py -{}-restrict\_indices results/matched\_idx.json}
-    re-scores each LSTM checkpoint on the same subset.
-  \item \texttt{src/combined\_plots.py} produces the side-by-side figures, and
-    \texttt{src/stats\_h3.py} computes the per-condition gap difference with its
-    bootstrap confidence interval and $p$-value.
-\end{enumerate}
+\paragraph{Cross-model comparison (H3).} The LSTM scores its 19{,}819 in-vocab
+pairs via \texttt{src/evaluate.py}; the full-scale RNNG run scores 19{,}983
+held-out pairs by beam search within \texttt{run\_rnng\_datahub.py}. We compare
+overall accuracy across these near-identical sets directly and take the
+within-model attractor gap as the primary cross-model contrast, since it is a
+rate rather than a count and is robust to the small difference in covered pairs
+(Section~\ref{sec:metrics}). \texttt{src/combined\_plots.py} reads both eval
+CSVs and produces the side-by-side accuracy and attractor-gap figures.
 
 \paragraph{Validity checks.} The RNNG run also emits a per-epoch validation
 perplexity log (\texttt{results/rnng\_train\_ppl.csv}) to confirm convergence,
