@@ -52,9 +52,15 @@ makes the model *more* reliant on the linear nearest-noun rule, not less.
 
 RNNG train+eval via `run_rnng_datahub.py` (150k sentences, 8 epochs). Raw rows:
 `rnng_eval_results.csv`. Comparison figures: `combined_acc_vs_noise.png`,
-`combined_attractor_gap.png`, `combined_acc_by_attractor.png` (from `src/combined_plots.py`,
-run with `--rnng_csv` filtered to seed 2 so the truncated seed-1 rows are not averaged in).
-**Seed 2 evaluated at full coverage (19,983 pairs); seeds 1 and 3 pending** (no error bars yet).
+`combined_attractor_gap.png`, `combined_acc_by_attractor.png` (from `src/combined_plots.py`).
+**Seed 2 is the reported full-coverage result (19,983 pairs); seeds 1 and 3 are excluded**
+(no error bars yet).
+
+> ⚠️ **Do not average seeds 1 and 3 into the figures.** Seed 1 is truncated (2,654 pairs)
+> and **seed 3 is non-monotonic / undertrained** (medium\_high acc `0.802` *below* high's
+> `0.834`, and a negative high-noise gap) — it needs a re-run before inclusion. `combined_plots.py`
+> now **defaults to `--rnng_seeds 2`** and drops the others automatically; pass `--rnng_seeds all`
+> only once seed 3 is validated.
 
 | condition | rate | acc_all | acc_no_attr | acc_attr | gap |
 |---|---|---|---|---|---|

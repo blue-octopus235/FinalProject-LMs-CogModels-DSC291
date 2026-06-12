@@ -68,13 +68,33 @@ def main():
     ap.add_argument("--lstm_csv",  default="results/eval_results.csv")
     ap.add_argument("--rnng_csv",  default="results/rnng_eval_results.csv")
     ap.add_argument("--out_dir",   default="results")
+    # Which RNNG seeds to include in the paper figures. Default keeps ONLY the
+    # validated full-coverage seed(s). Excluded by default:
+    #   seed 1 — truncated test set (2,654 pairs, not the full ~19.8k), and
+    #   seed 3 — non-monotonic / undertrained (medium_high acc 0.802 < high 0.834,
+    #            negative high-noise gap); pending a re-run.
+    # Averaging either in corrupts the comparison, so they are opt-in only.
+    ap.add_argument("--rnng_seeds", default="2",
+                    help="Comma-separated RNNG seeds to plot (default '2'); "
+                         "pass 'all' to include every seed in the CSV.")
     args = ap.parse_args()
 
     frames = []
     if os.path.exists(args.lstm_csv):
         frames.append(load_dedup(args.lstm_csv, "LSTM"))
     if os.path.exists(args.rnng_csv):
-        frames.append(load_dedup(args.rnng_csv, "RNNG"))
+        rnng = load_dedup(args.rnng_csv, "RNNG")
+        if args.rnng_seeds.strip().lower() != "all":
+            keep = {s.strip() for s in args.rnng_seeds.split(",") if s.strip()}
+            before = len(rnng)
+            rnng = rnng[rnng["seed"].astype(int).astype(str).isin(keep)]
+            dropped = before - len(rnng)
+            if dropped:
+                print(f"[combined_plots] RNNG: kept seed(s) {sorted(keep)}, "
+                      f"dropped {dropped} row(s) from other seeds "
+                      f"(seed 1 truncated, seed 3 unvalidated; use --rnng_seeds all "
+                      f"to override).")
+        frames.append(rnng)
 
     if not frames:
         print("No results CSVs found.")
