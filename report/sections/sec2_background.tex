@@ -12,7 +12,7 @@ One reason SVA is particularly useful is that successful performance requires id
 Building on this framework, we compare two classes of neural language models with different inductive biases. The first is the Long Short-Term Memory network (LSTM), a sequential recurrent architecture that processes sentences word by word and has served as a standard baseline in much of the SVA literature. Previous studies have shown that LSTMs can learn certain long-distance agreement dependencies and exhibit limited hierarchical generalization \citep{linzen2016, gulordava2018}
 . However, because they do not explicitly encode syntactic tree structures, they remain susceptible to interference in syntactically complex environments.
 
-The second model is the Recurrent Neural Network Grammar (RNNG) \citep{dyer2016}
+The second model is the Recurrent Neural Network Grammar (RNNG) \citep{dyer2016rnng}
 , which incorporates an explicit syntactic inductive bias by jointly generating sentences and their parse trees. By directly representing hierarchical phrase structure, RNNGs provide a stronger structural prior than purely sequential models. Previous work has shown that structurally supervised models often outperform sequence models on long-distance and non-local syntactic dependencies and display more human-like patterns of generalization\citep{kuncoro2018,wilcox2020}
 .
 
