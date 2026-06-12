@@ -17,5 +17,8 @@
 *.snm
 *.vrb
 
-# Note: main.pdf is intentionally NOT ignored so the built report can be
-# shared/committed. Run `make clean` to remove the artifacts above.
+# The compiled PDF is a build artifact: tracking it caused a binary merge
+# conflict on every rebuild. Regenerate with `make`; share the PDF out-of-band.
+main.pdf
+
+# Run `make clean` to remove the artifacts above.
